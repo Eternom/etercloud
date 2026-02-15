@@ -39,3 +39,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma generated client
+**/generated/
+
+# claude
+.claude/
+
+# IDE - Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# IDE - Visual Studio Code
+.vscode/
+
+# IDE - JetBrains (IntelliJ, WebStorm, etc.)
+.idea/
+*.iml
