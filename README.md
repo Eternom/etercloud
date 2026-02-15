@@ -34,7 +34,7 @@ Etercloud est une solution open-source d'hébergement permettant de déployer et
 
 ### Prérequis
 
-- Node.js 18+ 
+- Bun 1.0+
 - PostgreSQL ou MySQL
 - Instance Pterodactyl configurée
 - Compte Stripe (mode test ou production)
@@ -49,11 +49,7 @@ cd etercloud
 
 2. **Installer les dépendances**
 ```bash
-npm install
-# ou
-pnpm install
-# ou
-yarn install
+bun install
 ```
 
 3. **Configuration de l'environnement**
@@ -83,15 +79,15 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 4. **Setup de la base de données**
 ```bash
-npx prisma generate
-npx prisma db push
+bunx prisma generate
+bunx prisma db push
 # ou pour les migrations
-npx prisma migrate dev
+bunx prisma migrate dev
 ```
 
 5. **Lancer le serveur de développement**
 ```bash
-npm run dev
+bun dev
 ```
 
 Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
