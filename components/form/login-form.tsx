@@ -26,6 +26,14 @@ import { useState } from "react"
 import { Spinner } from "@/components/ui/spinner"
 
 
+/**
+ * Login form component with email/password authentication.
+ * Handles form validation, password visibility toggle, and displays
+ * a loading spinner with disabled fields during submission.
+ *
+ * @param {React.ComponentProps<"div">} props - Standard HTML div attributes
+ * @param {string} [props.className] - Additional CSS classes to merge with the default layout
+ */
 export function LoginForm({
   className,
   ...props
@@ -72,9 +80,9 @@ export function LoginForm({
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" placeholder="m@example.com" disabled={isSubmitting} {...register("email")} />
+                <Input id="email" type="email" placeholder="m@example.com" disabled={isSubmitting} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-error" : undefined} {...register("email")} />
                 {errors.email && (
-                  <FieldDescription className="text-destructive">
+                  <FieldDescription id="email-error" role="alert" className="text-destructive">
                     {errors.email.message}
                   </FieldDescription>
                 )}
@@ -87,19 +95,20 @@ export function LoginForm({
                   </Link>
                 </div>
                 <div className="relative w-full">
-                  <Input id="password" placeholder="Enter your password" type={showPassword ? "text" : "password"} disabled={isSubmitting} {...register("password")} />
+                  <Input id="password" placeholder="Enter your password" type={showPassword ? "text" : "password"} disabled={isSubmitting} aria-invalid={!!errors.password} aria-describedby={errors.password ? "password-error" : undefined} {...register("password")} />
                   <Button
                     type="button"
                     variant="link"
                     size="icon"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     className="absolute right-0  top-1/2 -translate-y-1/2"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
                 {errors.password && (
-                  <FieldDescription className="text-destructive">
+                  <FieldDescription id="password-error" role="alert" className="text-destructive">
                     {errors.password.message}
                   </FieldDescription>
                 )}
@@ -110,8 +119,8 @@ export function LoginForm({
                   Login
                 </Button>
                 {error && (
-                  <FieldDescription className="text-center text-destructive">
-                    {error} 
+                  <FieldDescription role="alert" className="text-center text-destructive">
+                    {error}
                   </FieldDescription>
                 )}
               </Field>
