@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from "@/lib/utils"
+import {Eye, EyeOff} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -14,7 +15,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { signInSchema, type SignInData } from "@/helpers/validations/auth"
 import Link from "next/link"
 import { signIn } from "@/lib/auth-client"
+import { useState } from "react"
 
 
 export function LoginForm({
@@ -29,6 +30,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
 
+  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -38,11 +41,18 @@ export function LoginForm({
     resolver: zodResolver(signInSchema),
   })
 
-  const onSubmit = (data: SignInData) => {
-    signIn.email({
+  const handleSignIn = async (data: SignInData) => {
+
+    setError(null) // reset Error state before attempting to sign in
+
+    const {error} = await signIn.email({
       email: data.email,
       password: data.password,
     })
+
+    if (error) {
+      setError(error.message || "An error occurred during sign in")
+    }
   }
 
   return (
@@ -55,7 +65,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(handleSignIn)}>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -73,7 +83,18 @@ export function LoginForm({
                     Forgot your password?
                   </Link>
                 </div>
-                <Input id="password" type="password" required {...register("password")} />
+                <div className="relative w-full">
+                  <Input id="password" placeholder="Enter your password" type={showPassword ? "text" : "password"} required {...register("password")} />
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0  top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
                 {errors.password && (
                   <FieldDescription className="text-destructive">
                     {errors.password.message}
@@ -82,6 +103,13 @@ export function LoginForm({
               </Field>
               <Field>
                 <Button type="submit" disabled={isSubmitting}>Login</Button>
+                {error && (
+                  <FieldDescription className="text-center text-destructive">
+                    {error} 
+                  </FieldDescription>
+                )}
+              </Field>
+              <Field>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="#">Sign up</a>
                 </FieldDescription>

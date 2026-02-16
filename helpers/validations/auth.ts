@@ -29,7 +29,10 @@ export const signUpSchema = z.object({
     password: z
         .string()
         .min(6, "Le mot de passe doit contenir au moins 6 caractères")
-        .max(100, "Le mot de passe doit contenir au maximum 100 caractères"),
+        .max(100, "Le mot de passe doit contenir au maximum 100 caractères")
+        .regex(/[A-Z]/, "Doit contenir au moins une majuscule")
+        .regex(/[a-z]/, "Doit contenir au moins une minuscule")
+        .regex(/[0-9]/, "Doit contenir au moins un chiffre"),
     confirmPassword: z
         .string()
         .min(6, "Le mot de passe de confirmation doit contenir au moins 6 caractères")
