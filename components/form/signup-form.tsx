@@ -1,4 +1,6 @@
+'use client'
 import { cn } from "@/lib/utils"
+import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -14,11 +16,47 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { signUpSchema, type SignUpData } from "@/helpers/validations/auth"
+import Link from "next/link"
+import { signUp } from "@/lib/auth-client"
+import { useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+
+
+  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpData>({
+    resolver: zodResolver(signUpSchema),
+  })
+
+  const handleSignUp = async (data: SignUpData) => {
+    setError(null) // reset Error state before attempting to sign up
+    
+    const {error} = await signUp.email({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    })
+
+    if (error) {
+      setError(error.message || "An error occurred during sign up")
+    }else {
+      window.location.href = "/dashboard" // Redirect to dashboard on successful sign up
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -29,11 +67,16 @@ export function SignupForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(handleSignUp)}>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="name">Full Name</FieldLabel>
-                <Input id="name" type="text" placeholder="John Doe" required />
+                <Input id="name" type="text" placeholder="John Doe" disabled={isSubmitting} {...register("name")} />
+                {errors.name && (
+                  <FieldDescription className="text-destructive">
+                    {errors.name.message}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -41,31 +84,81 @@ export function SignupForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  required
+                  disabled={isSubmitting}
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <FieldDescription className="text-destructive">
+                    {errors.email.message}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        disabled={isSubmitting}
+                        {...register("password")}
+                      />
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="icon"
+                        className="absolute inset-y-0 right-0 px-3 flex items-center"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {errors.password && (
+                      <FieldDescription className="text-destructive">
+                        {errors.password.message}
+                      </FieldDescription>
+                    )}
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
                       Confirm Password
                     </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        type={showPassword ? "text" : "password"}
+                        disabled={isSubmitting}
+                        {...register("confirmPassword")}
+                      />
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="icon"
+                        className="absolute inset-y-0 right-0 px-3 flex items-center"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                    {errors["confirmPassword"] && (
+                      <FieldDescription className="text-destructive">
+                        {errors["confirmPassword"].message}
+                      </FieldDescription>
+                    )}
                   </Field>
                 </Field>
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
               </Field>
               <Field>
-                <Button type="submit">Create Account</Button>
-                <FieldDescription className="text-center">
-                  Already have an account? <a href="#">Sign in</a>
-                </FieldDescription>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Spinner />}
+                  Create Account
+                </Button>
+                {error && (
+                  <FieldDescription className="text-center text-destructive">
+                    {error}
+                  </FieldDescription>
+                )}
               </Field>
             </FieldGroup>
           </form>

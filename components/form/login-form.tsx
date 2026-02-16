@@ -23,6 +23,7 @@ import { signInSchema, type SignInData } from "@/helpers/validations/auth"
 import Link from "next/link"
 import { signIn } from "@/lib/auth-client"
 import { useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 
 
 export function LoginForm({
@@ -52,6 +53,8 @@ export function LoginForm({
 
     if (error) {
       setError(error.message || "An error occurred during sign in")
+    }else {
+      window.location.href = "/dashboard" // Redirect to dashboard on successful sign in
     }
   }
 
@@ -69,7 +72,7 @@ export function LoginForm({
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" placeholder="m@example.com" {...register("email")} />
+                <Input id="email" type="email" placeholder="m@example.com" disabled={isSubmitting} {...register("email")} />
                 {errors.email && (
                   <FieldDescription className="text-destructive">
                     {errors.email.message}
@@ -84,7 +87,7 @@ export function LoginForm({
                   </Link>
                 </div>
                 <div className="relative w-full">
-                  <Input id="password" placeholder="Enter your password" type={showPassword ? "text" : "password"} required {...register("password")} />
+                  <Input id="password" placeholder="Enter your password" type={showPassword ? "text" : "password"} disabled={isSubmitting} {...register("password")} />
                   <Button
                     type="button"
                     variant="link"
@@ -102,7 +105,10 @@ export function LoginForm({
                 )}
               </Field>
               <Field>
-                <Button type="submit" disabled={isSubmitting}>Login</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Spinner />}
+                  Login
+                </Button>
                 {error && (
                   <FieldDescription className="text-center text-destructive">
                     {error} 
@@ -111,7 +117,7 @@ export function LoginForm({
               </Field>
               <Field>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account? <a href="/signup">Sign up</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
