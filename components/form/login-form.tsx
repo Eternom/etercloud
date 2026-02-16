@@ -13,6 +13,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
@@ -81,11 +82,7 @@ export function LoginForm({
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input id="email" type="email" placeholder="m@example.com" disabled={isSubmitting} aria-invalid={!!errors.email} aria-describedby={errors.email ? "email-error" : undefined} {...register("email")} />
-                {errors.email && (
-                  <FieldDescription id="email-error" role="alert" className="text-destructive">
-                    {errors.email.message}
-                  </FieldDescription>
-                )}
+                <FieldError id="email-error" message={errors.email?.message} />
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -107,22 +104,14 @@ export function LoginForm({
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
-                {errors.password && (
-                  <FieldDescription id="password-error" role="alert" className="text-destructive">
-                    {errors.password.message}
-                  </FieldDescription>
-                )}
+                <FieldError id="password-error" message={errors.password?.message} />
               </Field>
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting && <Spinner />}
                   Login
                 </Button>
-                {error && (
-                  <FieldDescription role="alert" className="text-center text-destructive">
-                    {error}
-                  </FieldDescription>
-                )}
+                <FieldError message={error ?? undefined} className="text-center" />
               </Field>
               <Field>
                 <FieldDescription className="text-center">

@@ -187,13 +187,19 @@ function FieldError({
   className,
   children,
   errors,
+  message,
   ...props
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>
+  message?: string
 }) {
   const content = useMemo(() => {
     if (children) {
       return children
+    }
+
+    if (message) {
+      return message
     }
 
     if (!errors?.length) {
@@ -216,20 +222,27 @@ function FieldError({
         )}
       </ul>
     )
-  }, [children, errors])
+  }, [children, errors, message])
 
-  if (!content) {
-    return null
-  }
+  const hasContent = !!content
 
   return (
     <div
-      role="alert"
-      data-slot="field-error"
-      className={cn("text-destructive text-sm font-normal", className)}
-      {...props}
+      className={cn(
+        "grid transition-all duration-200 ease-in-out",
+        hasContent ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+      )}
     >
-      {content}
+      <div className="overflow-hidden">
+        <div
+          role="alert"
+          data-slot="field-error"
+          className={cn("text-destructive text-sm font-normal", className)}
+          {...props}
+        >
+          {content}
+        </div>
+      </div>
     </div>
   )
 }

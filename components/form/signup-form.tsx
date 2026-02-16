@@ -12,6 +12,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
@@ -22,6 +23,7 @@ import { signUpSchema, type SignUpData } from "@/helpers/validations/auth"
 import { signUp } from "@/lib/auth-client"
 import { useState } from "react"
 import { Spinner } from "@/components/ui/spinner"
+import { PasswordStrengthIndicator } from "@/components/feedback/password-strength-indicator"
 
 /**
  * Signup form component for new user registration.
@@ -44,6 +46,7 @@ export function SignupForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignUpData>({
     resolver: zodResolver(signUpSchema),
@@ -80,11 +83,7 @@ export function SignupForm({
               <Field>
                 <FieldLabel htmlFor="name">Full Name</FieldLabel>
                 <Input id="name" type="text" placeholder="John Doe" disabled={isSubmitting} aria-invalid={!!errors.name} aria-describedby={errors.name ? "name-error" : undefined} {...register("name")} />
-                {errors.name && (
-                  <FieldDescription id="name-error" role="alert" className="text-destructive">
-                    {errors.name.message}
-                  </FieldDescription>
-                )}
+                <FieldError id="name-error" message={errors.name?.message} />
               </Field>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -97,11 +96,7 @@ export function SignupForm({
                   aria-describedby={errors.email ? "email-error" : undefined}
                   {...register("email")}
                 />
-                {errors.email && (
-                  <FieldDescription id="email-error" role="alert" className="text-destructive">
-                    {errors.email.message}
-                  </FieldDescription>
-                )}
+                <FieldError id="email-error" message={errors.email?.message} />
               </Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
@@ -127,11 +122,8 @@ export function SignupForm({
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
-                    {errors.password && (
-                      <FieldDescription id="password-error" role="alert" className="text-destructive">
-                        {errors.password.message}
-                      </FieldDescription>
-                    )}
+                    <PasswordStrengthIndicator password={watch("password") ?? ""} />
+                    <FieldError id="password-error" message={errors.password?.message} />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
@@ -157,11 +149,7 @@ export function SignupForm({
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
-                    {errors.confirmPassword && (
-                      <FieldDescription id="confirm-password-error" role="alert" className="text-destructive">
-                        {errors.confirmPassword.message}
-                      </FieldDescription>
-                    )}
+                    <FieldError id="confirm-password-error" message={errors.confirmPassword?.message} />
                   </Field>
                 </Field>
               </Field>
@@ -170,11 +158,7 @@ export function SignupForm({
                   {isSubmitting && <Spinner />}
                   Create Account
                 </Button>
-                {error && (
-                  <FieldDescription role="alert" className="text-center text-destructive">
-                    {error}
-                  </FieldDescription>
-                )}
+                <FieldError message={error ?? undefined} className="text-center" />
               </Field>
             </FieldGroup>
           </form>
