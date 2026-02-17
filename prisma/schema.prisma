@@ -24,6 +24,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  stripeCustomerId String?
+
   @@unique([email])
   @@map("user")
 }

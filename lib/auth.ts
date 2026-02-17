@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@/lib/prisma";
+import { stripe } from "@better-auth/stripe"
+import stripeClient from "@/lib/stripe";
 import { nextCookies } from "better-auth/next-js";
 
 /**
@@ -16,6 +18,11 @@ export const auth = betterAuth({
         enabled: true
     },
     plugins: [
+        stripe({
+            stripeClient,
+            stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+            createCustomerOnSignUp: true,
+        }),
         nextCookies(), // Gestion automatique des cookies pour Next.js
     ],
 });
