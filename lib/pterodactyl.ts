@@ -1,8 +1,6 @@
-import type { CreateServerOptions, PteroServer } from "@/types/pterodactyl"
+export type * from "@/types/pterodactyl"
 
-export type { PteroServer, PteroServerLimits, PteroServerFeatureLimits, CreateServerOptions } from "@/types/pterodactyl"
-
-async function pteroFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+export async function pteroFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = process.env.PTERODACTYL_URL
   const key = process.env.PTERODACTYL_API_KEY
 
@@ -27,43 +25,4 @@ async function pteroFetch<T>(path: string, options: RequestInit = {}): Promise<T
 
   if (res.status === 204) return undefined as T
   return res.json()
-}
-
-export async function getServer(serverId: number): Promise<PteroServer> {
-  const data = await pteroFetch<{ attributes: PteroServer }>(`/servers/${serverId}`)
-  return data.attributes
-}
-
-export async function createServer(options: CreateServerOptions): Promise<PteroServer> {
-  const data = await pteroFetch<{ attributes: PteroServer }>("/servers", {
-    method: "POST",
-    body: JSON.stringify({
-      name: options.name,
-      user: options.userId,
-      egg: options.eggId,
-      docker_image: options.dockerImage,
-      startup: options.startupCommand,
-      environment: options.environment,
-      limits: options.limits,
-      feature_limits: {
-        databases: options.featureLimits.databases,
-        backups: options.featureLimits.backups,
-        allocations: options.featureLimits.allocations,
-      },
-      allocation: { default: options.allocationId },
-    }),
-  })
-  return data.attributes
-}
-
-export async function deleteServer(serverId: number): Promise<void> {
-  await pteroFetch<void>(`/servers/${serverId}`, { method: "DELETE" })
-}
-
-export async function suspendServer(serverId: number): Promise<void> {
-  await pteroFetch<void>(`/servers/${serverId}/suspend`, { method: "POST" })
-}
-
-export async function unsuspendServer(serverId: number): Promise<void> {
-  await pteroFetch<void>(`/servers/${serverId}/unsuspend`, { method: "POST" })
 }
