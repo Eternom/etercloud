@@ -24,11 +24,13 @@ model User {
   sessions         Session[]
   accounts         Account[]
   servers          Server[]
-  subscription     Subscription?
-  stripeCustomerId String?
+  subscription      Subscription?
+  stripeCustomerId  String?
+  pterodactylUserId Int?
 
   @@unique([email])
   @@unique([stripeCustomerId])
+  @@unique([pterodactylUserId])
   @@map("user")
 }
 
