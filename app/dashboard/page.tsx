@@ -1,7 +1,23 @@
+import { headers } from "next/headers"
 import { Server, Activity, Cpu, MemoryStick } from "lucide-react"
+import { auth } from "@/lib/auth"
+import prisma from "@/lib/prisma"
 import { StatCard } from "@/components/display/stat-card"
+import { ServerCard } from "@/components/display/server-card"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth.api.getSession({ headers: await headers() })
+
+  const servers = await prisma.server.findMany({
+    where: { userId: session!.user.id },
+    orderBy: { createdAt: "desc" },
+  })
+
+  const totalServers = servers.length
+  const activeServers = servers.filter((s) => s.status === "active").length
+  const totalCpu = servers.reduce((sum, s) => sum + s.cpuUsage, 0)
+  const totalRam = servers.reduce((sum, s) => sum + s.memoryUsage, 0)
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -14,23 +30,23 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total servers"
-          value="—"
+          value={totalServers}
           icon={Server}
         />
         <StatCard
           title="Active servers"
-          value="—"
+          value={activeServers}
           icon={Activity}
         />
         <StatCard
           title="CPU usage"
-          value="—"
+          value={totalServers > 0 ? `${totalCpu}%` : "—"}
           description="Combined across all your servers"
           icon={Cpu}
         />
         <StatCard
           title="RAM usage"
-          value="—"
+          value={totalServers > 0 ? `${(totalRam / 1024).toFixed(1)} GB` : "—"}
           description="Combined across all your servers"
           icon={MemoryStick}
         />
@@ -38,9 +54,23 @@ export default function DashboardPage() {
 
       <div>
         <h2 className="mb-4 text-lg font-semibold">Your servers</h2>
-        <p className="text-sm text-muted-foreground">
-          No servers yet.
-        </p>
+        {servers.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {servers.map((server) => (
+              <ServerCard
+                key={server.id}
+                name={server.name}
+                identifier={server.identifierPtero}
+                status={server.status}
+                cpuUsage={server.cpuUsage}
+                memoryUsageMb={server.memoryUsage}
+                diskUsageMb={server.diskUsage}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No servers yet.</p>
+        )}
       </div>
     </div>
   )
