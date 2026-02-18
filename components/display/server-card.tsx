@@ -43,11 +43,11 @@ export function ServerCard({
         </span>
         <span className="flex items-center gap-1.5">
           <MemoryStick className="size-3.5" />
-          {(memoryUsageMb / 1024).toFixed(1)} Go
+          {(memoryUsageMb / 1024).toFixed(1)} GB
         </span>
         <span className="flex items-center gap-1.5">
           <HardDrive className="size-3.5" />
-          {(diskUsageMb / 1024).toFixed(1)} Go
+          {(diskUsageMb / 1024).toFixed(1)} GB
         </span>
       </CardContent>
     </Card>
