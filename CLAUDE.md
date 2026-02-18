@@ -89,6 +89,7 @@ prisma/
 - Integration branch: `develop`
 - Feature branches: `{issue-number}-{short-description}` (e.g. `10-dashboard-ui`)
 - Always branch off `develop`, PR back into `develop`
+- **PRs must NEVER target `main` — always target `develop`**
 - PR titles follow conventional commits: `feat(scope): description`
 - No direct commits to `main` or `develop`
 
