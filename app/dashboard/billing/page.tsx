@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { SubscribeButton } from "@/components/form/subscribe-button"
+import { CancelButton } from "@/components/form/cancel-button"
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
@@ -52,6 +53,11 @@ export default async function BillingPage() {
                   : `Renews on ${formatDate(subscription.periodEnd)}`}
               </p>
             </CardContent>
+            {subscription.status === "active" && !subscription.cancelAtPeriodEnd && (
+              <CardFooter>
+                <CancelButton />
+              </CardFooter>
+            )}
           </Card>
         </div>
       ) : (
