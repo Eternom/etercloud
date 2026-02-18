@@ -169,6 +169,20 @@ export interface PteroEgg {
   updated_at: string
 }
 
+export interface PteroEggVariable {
+  name: string
+  description: string
+  env_variable: string   // key used in the environment map when creating a server
+  default_value: string
+  user_viewable: boolean
+  user_editable: boolean
+  rules: string
+}
+
+export interface PteroEggWithVariables extends PteroEgg {
+  variables: PteroEggVariable[]
+}
+
 // ---------------------------------------------------------------------------
 // Allocations
 // ---------------------------------------------------------------------------

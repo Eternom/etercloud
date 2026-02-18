@@ -7,6 +7,8 @@ import type {
   PteroLocation,
   PteroNest,
   PteroEgg,
+  PteroEggVariable,
+  PteroEggWithVariables,
   PteroAllocation,
   CreateServerOptions,
   UpdateServerDetailsOptions,
@@ -190,6 +192,17 @@ class PteroService {
   async getEgg(nestId: number, eggId: number): Promise<PteroEgg> {
     const data = await pteroFetch<{ attributes: PteroEgg }>(`/nests/${nestId}/eggs/${eggId}`)
     return data.attributes
+  }
+
+  async getEggWithVariables(nestId: number, eggId: number): Promise<PteroEggWithVariables> {
+    const data = await pteroFetch<{
+      attributes: PteroEgg
+      relationships: { variables: { data: { attributes: PteroEggVariable }[] } }
+    }>(`/nests/${nestId}/eggs/${eggId}?include=variables`)
+    return {
+      ...data.attributes,
+      variables: data.relationships.variables.data.map((v) => v.attributes),
+    }
   }
 
   // ── Allocations ───────────────────────────────────────────────────────────
