@@ -57,7 +57,14 @@ export interface CreateServerOptions {
   environment: Record<string, string>
   limits: PteroServerLimits
   featureLimits: PteroServerFeatureLimits
-  allocationId: number
+  /** Manual allocation — provide either allocationId or deploy, not both */
+  allocationId?: number
+  /** Auto-deploy: Pterodactyl picks the node and allocation from the given location */
+  deploy?: {
+    locations: number[]
+    dedicatedIp?: boolean
+    portRange?: string[]
+  }
 }
 
 export interface UpdateServerDetailsOptions {
