@@ -14,22 +14,25 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id               String    @id @default(uuid())
+  name             String
+  email            String
+  emailVerified    Boolean   @default(false)
+  image            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  servers          Server[]
+  stripeCustomerId String?
 
   @@unique([email])
+  @@unique([stripeCustomerId])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(uuid())
   expiresAt DateTime
   token     String
   createdAt DateTime @default(now())
@@ -45,7 +48,7 @@ model Session {
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
@@ -61,17 +64,95 @@ model Account {
   updatedAt             DateTime  @updatedAt
 
   @@index([userId])
+  @@unique([providerId, accountId])
   @@map("account")
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id   @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@index([identifier])
+  @@unique([identifier, value])
   @@map("verification")
+}
+
+model Plan {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  description   String
+  stripePriceId String   @unique
+  price         Int     // Price in cents
+  planLimit     PlanLimit?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PlanLimit {
+  id            String   @id @default(uuid())
+  cpuMax        Int
+  memoryMax     Int
+  diskMax       Int
+  databaseMax   Int
+  backupMax     Int
+  allocatedMax  Int
+  serverMax     Int
+  planId        String   @unique
+  plan          Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Server {
+  id              String   @id @default(uuid())
+  name            String
+  identifierPtero String   @unique
+  idPtero         String   @unique
+  status          ServerStatus @default(inactive)
+  cpuUsage        Int
+  memoryUsage     Int
+  diskUsage       Int
+  databaseUsage   Int
+  backupUsage     Int
+  allocatedUsage  Int
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, status])
+}
+
+enum ServerStatus {
+  active
+  inactive
+  suspended
+  terminated
+}
+
+model Subscription {
+  id                   String    @id @default(uuid())
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?   @default("incomplete")
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  seats                Int?
+
+  @@index([referenceId])
+  @@index([stripeCustomerId])
+  @@unique([stripeSubscriptionId])
+  @@map("subscription")
 }
