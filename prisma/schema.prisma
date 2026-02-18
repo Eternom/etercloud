@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid())
+  id               String        @id @default(uuid())
   name             String
   email            String
-  emailVerified    Boolean   @default(false)
+  emailVerified    Boolean       @default(false)
   image            String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
   sessions         Session[]
   accounts         Account[]
   servers          Server[]
+  subscription     Subscription?
   stripeCustomerId String?
 
   @@unique([email])
@@ -81,14 +82,43 @@ model Verification {
 }
 
 model Plan {
-  id            String   @id @default(uuid())
-  name          String   @unique
+  id            String        @id @default(uuid())
+  name          String        @unique
   description   String
-  stripePriceId String   @unique
-  price         Int     // Price in cents
+  stripePriceId String        @unique
+  price         Int           // Price in cents
   planLimit     PlanLimit?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  subscriptions Subscription[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  planId               String
+  plan                 Plan               @relation(fields: [planId], references: [id])
+  status               SubscriptionStatus
+  periodStart          DateTime
+  periodEnd            DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@map("subscription")
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  past_due
+  canceled
+  incomplete
+  incomplete_expired
+  unpaid
 }
 
 model PlanLimit {

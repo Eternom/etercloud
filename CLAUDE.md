@@ -21,11 +21,12 @@ app/
     billing/page.tsx   # /dashboard/billing
   api/auth/[...all]/   # BetterAuth catch-all route
 components/
-  display/             # Presentational components (cards, badges)
-  feedback/            # User feedback components (password strength, etc.)
-  form/                # Form components (login, signup)
+  display/             # Presentational/info components (cards, badges, stat displays)
+  feedback/            # User feedback components (password strength, alerts, toasts)
+  form/                # Action/form components (login, signup, submit buttons, inputs)
   navigation/          # Sidebar, nav items
   ui/                  # shadcn/ui base components
+# Rule: components go in the folder matching their purpose — never create ad-hoc theme folders
 lib/
   auth.ts              # Server-side BetterAuth instance (Prisma + Stripe plugin)
   auth-client.ts       # Client-side BetterAuth (signIn, signOut, signUp, useSession)
