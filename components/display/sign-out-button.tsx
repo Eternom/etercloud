@@ -18,7 +18,7 @@ export function SignOutButton(props: React.ComponentProps<typeof Button>) {
     await signOut({
       fetchOptions: {
         onSuccess: () => {
-          window.location.href = "/sign-in"
+          window.location.href = "/login"
         },
       },
     })
