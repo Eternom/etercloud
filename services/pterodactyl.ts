@@ -47,7 +47,15 @@ class PteroService {
           backups: options.featureLimits.backups,
           allocations: options.featureLimits.allocations,
         },
-        allocation: { default: options.allocationId },
+        ...(options.deploy
+          ? {
+              deploy: {
+                locations: options.deploy.locations,
+                dedicated_ip: options.deploy.dedicatedIp ?? false,
+                port_range: options.deploy.portRange ?? [],
+              },
+            }
+          : { allocation: { default: options.allocationId } }),
       }),
     })
     return data.attributes
