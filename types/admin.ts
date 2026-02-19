@@ -44,3 +44,21 @@ export interface UpdateUserRolePayload {
 export interface DeleteUserPayload {
   userId: string
 }
+
+export type AdminPlan = {
+  id: string
+  name: string
+  description: string
+  stripePriceId: string
+  price: number // in cents
+  createdAt: Date
+  planLimit: {
+    cpuMax: number
+    memoryMax: number
+    diskMax: number
+    databaseMax: number
+    backupMax: number
+    allocatedMax: number
+    serverMax: number
+  } | null
+}
