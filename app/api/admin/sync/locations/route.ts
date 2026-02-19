@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { ptero } from "@/services/pterodactyl"
+import { ptero } from "@/services/pterodactyl.service"
 
 // TODO(#37): replace with proper admin role check once BetterAuth admin plugin is set up
 async function requireAdmin() {

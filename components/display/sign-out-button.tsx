@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { signOut } from "@/lib/auth-client"
+import { signOut } from "@/services/auth-client.service"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
