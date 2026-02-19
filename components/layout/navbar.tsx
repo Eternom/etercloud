@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator"
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/#features", label: "Features" },
-  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#how-it-works", label: "How" },
   { href: "/#pricing", label: "Pricing" },
   { href: "/#locations", label: "Locations" },
   { href: "/#faq", label: "FAQ" },
