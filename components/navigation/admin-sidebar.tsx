@@ -2,8 +2,7 @@
 
 import { LayoutDashboard, Users, CreditCard, Server, MapPin, PackageCheck } from "lucide-react"
 import { NavItem } from "@/components/navigation/nav-item"
-import { SignOutButton } from "@/components/display/sign-out-button"
-import { Separator } from "@/components/ui/separator"
+import { SidebarUserMenu } from "@/components/navigation/sidebar-user-menu"
 
 const adminNavItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -14,7 +13,15 @@ const adminNavItems = [
   { href: "/admin/plans", label: "Plans", icon: PackageCheck },
 ]
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  user: {
+    name: string
+    email: string
+    role: string
+  }
+}
+
+export function AdminSidebar({ user }: AdminSidebarProps) {
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r bg-card">
       <div className="flex h-16 items-center border-b px-6">
@@ -27,9 +34,8 @@ export function AdminSidebar() {
         ))}
       </nav>
 
-      <div className="p-4">
-        <Separator className="mb-4" />
-        <SignOutButton variant="ghost" className="w-full justify-start text-muted-foreground" />
+      <div className="border-t p-3">
+        <SidebarUserMenu name={user.name} email={user.email} role={user.role} />
       </div>
     </aside>
   )
