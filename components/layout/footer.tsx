@@ -20,7 +20,7 @@ const FOOTER_LINKS = {
   ],
 }
 
-export function PublicFooter() {
+export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

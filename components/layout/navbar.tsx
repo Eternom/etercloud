@@ -20,7 +20,7 @@ interface PublicNavbarProps {
   isLoggedIn: boolean
 }
 
-export function PublicNavbar({ isLoggedIn }: PublicNavbarProps) {
+export function Navbar({ isLoggedIn }: PublicNavbarProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
