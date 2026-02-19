@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, Users, CreditCard } from "lucide-react"
+import { LayoutDashboard, Users, CreditCard, Server, MapPin } from "lucide-react"
 import { NavItem } from "@/components/navigation/nav-item"
 import { SignOutButton } from "@/components/display/sign-out-button"
 import { Separator } from "@/components/ui/separator"
@@ -9,6 +9,8 @@ const adminNavItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
+  { href: "/admin/servers", label: "Servers", icon: Server },
+  { href: "/admin/locations", label: "Locations", icon: MapPin },
 ]
 
 export function AdminSidebar() {
