@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LayoutDashboard, ShieldCheck, LogOut } from "lucide-react"
-import { signOut } from "@/lib/auth-client"
+import { signOut } from "@/services/auth-client.service"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,

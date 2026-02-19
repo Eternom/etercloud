@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma"
-import { ptero } from "@/services/pterodactyl"
+import { ptero } from "@/services/pterodactyl.service"
 
 /**
  * Returns the Pterodactyl user ID for a given EterCloud user.

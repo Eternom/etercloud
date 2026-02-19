@@ -1,4 +1,4 @@
-import { ptero } from "@/services/pterodactyl"
+import { ptero } from "@/services/pterodactyl.service"
 import prisma from "@/lib/prisma"
 import { LocationTable, type MergedLocation } from "@/components/display/location-table"
 

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from "@/services/auth-client.service"
 import { useRouter } from "next/navigation"
 import { Shield, User } from "lucide-react"
 import type { AdminUser } from "@/types/admin"

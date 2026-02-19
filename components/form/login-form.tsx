@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signInSchema, type SignInData } from "@/helpers/validations/auth"
 import Link from "next/link"
-import { signIn } from "@/lib/auth-client"
+import { signIn } from "@/services/auth-client.service"
 import { useState } from "react"
 import { Spinner } from "@/components/ui/spinner"
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { ptero } from "@/services/pterodactyl"
+import { ptero } from "@/services/pterodactyl.service"
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: await headers() })
