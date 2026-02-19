@@ -15,7 +15,7 @@ const navLinks = [
   { href: "#faq", label: "FAQ" },
 ]
 
-export function HomeNav() {
+export function HomeNav({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -42,12 +42,20 @@ export function HomeNav() {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">Get started</Link>
-          </Button>
+          {isLoggedIn ? (
+            <Button asChild>
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">Get started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile menu */}
@@ -77,12 +85,20 @@ export function HomeNav() {
             </nav>
             <Separator className="my-4" />
             <div className="flex flex-col gap-2">
-              <Button variant="outline" asChild>
-                <Link href="/login" onClick={() => setOpen(false)}>Sign in</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup" onClick={() => setOpen(false)}>Get started</Link>
-              </Button>
+              {isLoggedIn ? (
+                <Button asChild>
+                  <Link href="/dashboard" onClick={() => setOpen(false)}>Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" asChild>
+                    <Link href="/login" onClick={() => setOpen(false)}>Sign in</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/signup" onClick={() => setOpen(false)}>Get started</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </SheetContent>
         </Sheet>

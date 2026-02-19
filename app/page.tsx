@@ -5,6 +5,8 @@ import {
   Zap, CreditCard, MapPin, ShieldCheck,
   BarChart3, HardDrive, CheckCircle2, ArrowRight,
 } from "lucide-react"
+import { headers } from "next/headers"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { HomeNav } from "@/components/display/home-nav"
 import { Button } from "@/components/ui/button"
@@ -86,15 +88,18 @@ const faq = [
 ]
 
 export default async function HomePage() {
-  const [plans, locations, games] = await Promise.all([
+  const [session, plans, locations, games] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
     prisma.plan.findMany({ include: { planLimit: true }, orderBy: { price: "asc" } }),
     prisma.location.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
     prisma.gameCategory.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
   ])
 
+  const isLoggedIn = !!session
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HomeNav />
+      <HomeNav isLoggedIn={isLoggedIn} />
 
       {/* ── Hero ── */}
       <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-28 text-center sm:px-6 lg:py-40">
@@ -111,9 +116,15 @@ export default async function HomePage() {
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button size="lg" asChild>
-            <Link href="/signup">
-              Get started <ArrowRight className="ml-2 size-4" />
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/dashboard">
+                Go to dashboard <ArrowRight className="ml-2 size-4" />
+              </Link>
+            ) : (
+              <Link href="/signup">
+                Get started <ArrowRight className="ml-2 size-4" />
+              </Link>
+            )}
           </Button>
           <Button size="lg" variant="outline" asChild>
             <a href="#pricing">See pricing</a>
