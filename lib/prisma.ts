@@ -3,28 +3,34 @@ import { PrismaClient } from "@/prisma/generated/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-// On informe TypeScript que l'objet global possède une propriété optionnelle prismaGlobal
+// Lazy initialization — defers new PrismaClient() to the first property access
+// at request time, so the Docker build succeeds without DATABASE_URL.
 declare global {
-    var prismaGlobal: PrismaClient | undefined;
+  var prismaGlobal: PrismaClient | undefined;
 }
 
-let prisma: PrismaClient;
+let _client: PrismaClient | null = null;
 
-if (globalThis.prismaGlobal) {
-    prisma = globalThis.prismaGlobal;
-} else {
+function getClient(): PrismaClient {
+  if (globalThis.prismaGlobal) return globalThis.prismaGlobal;
+  if (!_client) {
     const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-        throw new Error("DATABASE_URL is not defined");
-    }
+    if (!connectionString) throw new Error("DATABASE_URL is not defined");
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
-    prisma = new PrismaClient({ adapter });
-
+    _client = new PrismaClient({ adapter });
     if (process.env.NODE_ENV !== "production") {
-        globalThis.prismaGlobal = prisma;
+      globalThis.prismaGlobal = _client;
     }
+  }
+  return _client;
 }
+
+const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    return (getClient() as never as Record<string | symbol, unknown>)[prop];
+  },
+});
 
 // Export par défaut du client
 export default prisma;
