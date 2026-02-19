@@ -1,8 +1,11 @@
+import { headers } from "next/headers"
+import { auth } from "@/lib/auth"
 import { SidebarNav } from "@/components/navigation/sidebar-nav"
-import { SignOutButton } from "@/components/display/sign-out-button"
-import { Separator } from "@/components/ui/separator"
+import { SidebarUserMenu } from "@/components/navigation/sidebar-user-menu"
 
-export function Sidebar() {
+export async function Sidebar() {
+  const session = await auth.api.getSession({ headers: await headers() })
+
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r bg-card">
       <div className="flex h-16 items-center border-b px-6">
@@ -13,9 +16,14 @@ export function Sidebar() {
         <SidebarNav />
       </nav>
 
-      <div className="p-4">
-        <Separator className="mb-4" />
-        <SignOutButton variant="ghost" className="w-full justify-start text-muted-foreground" />
+      <div className="border-t p-3">
+        {session && (
+          <SidebarUserMenu
+            name={session.user.name}
+            email={session.user.email}
+            role={session.user.role ?? "user"}
+          />
+        )}
       </div>
     </aside>
   )
