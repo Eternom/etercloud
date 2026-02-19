@@ -142,7 +142,7 @@ export default async function HomePage() {
         </div>
         <div className="grid gap-8 sm:grid-cols-3">
           {steps.map((step) => (
-            <div key={step.number} className="flex flex-col items-center gap-3 text-center">
+            <div key={step.number} className="flex flex-col items-center gap-3 text-center transition-transform duration-300 hover:-translate-y-1">
               <span className="text-5xl font-bold text-primary/20">{step.number}</span>
               <h3 className="text-lg font-semibold">{step.title}</h3>
               <p className="text-sm text-muted-foreground">{step.description}</p>
@@ -161,7 +161,7 @@ export default async function HomePage() {
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
-            <Card key={f.title} className="border-border/60">
+            <Card key={f.title} className="border-border/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md">
               <CardHeader className="pb-2">
                 <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <f.icon className="size-5" />
@@ -194,7 +194,7 @@ export default async function HomePage() {
               return (
                 <Card
                   key={plan.id}
-                  className={highlighted ? "border-primary shadow-lg ring-1 ring-primary" : "border-border/60"}
+                  className={highlighted ? "border-primary shadow-lg ring-1 ring-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" : "border-border/60 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-md"}
                 >
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -251,16 +251,22 @@ export default async function HomePage() {
           <section id="locations" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold tracking-tight">Deployment regions</h2>
-              <p className="mt-2 text-muted-foreground">Choose the location closest to your players.</p>
+              <p className="mt-2 text-muted-foreground">Choose the location closest to your players for the lowest latency.</p>
             </div>
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {locations.map((loc) => (
-                <Card key={loc.id} className="flex items-center gap-3 px-5 py-4 border-border/60">
-                  <MapPin className="size-4 text-primary shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm">{loc.name}</p>
+                <Card
+                  key={loc.id}
+                  className="group flex items-center gap-4 px-6 py-5 border-border/60 transition-all duration-300 hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <div className="relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                    <MapPin className="size-5 text-primary" />
+                    <span className="absolute inset-0 rounded-xl animate-ping bg-primary/15" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-sm leading-snug">{loc.name}</p>
                     {loc.description && (
-                      <p className="text-xs text-muted-foreground">{loc.description}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{loc.description}</p>
                     )}
                   </div>
                 </Card>
