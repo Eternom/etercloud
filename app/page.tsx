@@ -343,6 +343,7 @@ export default async function HomePage() {
           </div>
           <p>Game server hosting, simplified.</p>
           <div className="flex gap-4">
+            <Link href="/status" className="hover:text-foreground transition-colors">Status</Link>
             <Link href="/login" className="hover:text-foreground transition-colors">Sign in</Link>
             <Link href="/signup" className="hover:text-foreground transition-colors">Sign up</Link>
           </div>
