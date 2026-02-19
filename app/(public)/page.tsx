@@ -8,7 +8,6 @@ import {
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { HomeNav } from "@/components/display/home-nav"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -98,9 +97,7 @@ export default async function HomePage() {
   const isLoggedIn = !!session
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <HomeNav isLoggedIn={isLoggedIn} />
-
+    <>
       {/* ── Hero ── */}
       <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-28 text-center sm:px-6 lg:py-40">
         <Badge variant="secondary" className="gap-1.5">
@@ -333,22 +330,6 @@ export default async function HomePage() {
           </Button>
         </div>
       </section>
-
-      {/* ── Footer ── */}
-      <footer className="border-t bg-muted/30">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:px-6">
-          <div className="flex items-center gap-2 font-medium text-foreground">
-            <HardDrive className="size-4" />
-            EterCloud
-          </div>
-          <p>Game server hosting, simplified.</p>
-          <div className="flex gap-4">
-            <Link href="/status" className="hover:text-foreground transition-colors">Status</Link>
-            <Link href="/login" className="hover:text-foreground transition-colors">Sign in</Link>
-            <Link href="/signup" className="hover:text-foreground transition-colors">Sign up</Link>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   )
 }
