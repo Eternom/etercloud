@@ -73,6 +73,28 @@ prisma/
 - Post-login redirect: `/dashboard`
 - Post-logout redirect: `/login`
 
+### Admin role
+
+The admin plugin is enabled for user management and impersonation.
+
+**Promote a user to admin:**
+```sql
+UPDATE "user" SET role = 'admin' WHERE email = 'admin@example.com';
+```
+
+**Check admin status from server:**
+```ts
+const session = await auth.api.getSession({ headers: await headers() })
+const isAdmin = session?.user?.role === "admin"
+```
+
+**Available admin methods (server-side):**
+- `auth.api.admin.listUsers()` — list all users
+- `auth.api.admin.banUser()` — ban a user
+- `auth.api.admin.unbanUser()` — unban a user
+- `auth.api.admin.impersonateUser()` — impersonate a user
+- `auth.api.admin.stopImpersonating()` — stop impersonating
+
 ---
 
 ## GitHub workflow

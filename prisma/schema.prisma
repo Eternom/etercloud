@@ -19,6 +19,10 @@ model User {
   email            String
   emailVerified    Boolean       @default(false)
   image            String?
+  role             String?       @default("user")
+  banned           Boolean?
+  banReason        String?
+  banExpires       DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   sessions         Session[]
@@ -35,15 +39,16 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
@@ -138,12 +143,42 @@ model PlanLimit {
   updatedAt     DateTime @updatedAt
 }
 
+model Location {
+  id          String   @id @default(uuid())
+  pteroId     Int      @unique
+  name        String
+  description String
+  active      Boolean  @default(true)
+  servers     Server[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("location")
+}
+
+model GameCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  pteroNestId Int
+  pteroEggId  Int      @unique
+  dockerImage String
+  startup     String
+  active      Boolean  @default(true)
+  servers     Server[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([pteroNestId, pteroEggId])
+  @@map("game_category")
+}
+
 model Server {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   name            String
-  identifierPtero String   @unique
-  idPtero         String   @unique
-  status          ServerStatus @default(inactive)
+  identifierPtero String        @unique
+  idPtero         String        @unique
+  status          ServerStatus  @default(inactive)
   cpuUsage        Int
   memoryUsage     Int
   diskUsage       Int
@@ -151,9 +186,13 @@ model Server {
   backupUsage     Int
   allocatedUsage  Int
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationId      String?
+  location        Location?     @relation(fields: [locationId], references: [id])
+  gameCategoryId  String?
+  gameCategory    GameCategory? @relation(fields: [gameCategoryId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([userId])
   @@index([userId, status])
