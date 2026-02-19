@@ -134,25 +134,6 @@ export default async function HomePage() {
 
       <Separator />
 
-      {/* ── How it works ── */}
-      <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">How it works</h2>
-          <p className="mt-2 text-muted-foreground">Three steps to get your server online.</p>
-        </div>
-        <div className="grid gap-8 sm:grid-cols-3">
-          {steps.map((step) => (
-            <div key={step.number} className="flex flex-col items-center gap-3 text-center transition-transform duration-300 hover:-translate-y-1">
-              <span className="text-5xl font-bold text-primary/20">{step.number}</span>
-              <h3 className="text-lg font-semibold">{step.title}</h3>
-              <p className="text-sm text-muted-foreground">{step.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <Separator />
-
       {/* ── Features ── */}
       <section id="features" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="mb-12 text-center">
@@ -172,6 +153,25 @@ export default async function HomePage() {
                 <p className="text-sm text-muted-foreground">{f.description}</p>
               </CardContent>
             </Card>
+          ))}
+        </div>
+      </section>
+
+      <Separator />
+
+      {/* ── How it works ── */}
+      <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div className="mb-12 text-center">
+          <h2 className="text-3xl font-bold tracking-tight">How it works</h2>
+          <p className="mt-2 text-muted-foreground">Three steps to get your server online.</p>
+        </div>
+        <div className="grid gap-8 sm:grid-cols-3">
+          {steps.map((step) => (
+            <div key={step.number} className="flex flex-col items-center gap-3 text-center transition-transform duration-300 hover:-translate-y-1">
+              <span className="text-5xl font-bold text-primary/20">{step.number}</span>
+              <h3 className="text-lg font-semibold">{step.title}</h3>
+              <p className="text-sm text-muted-foreground">{step.description}</p>
+            </div>
           ))}
         </div>
       </section>
