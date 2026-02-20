@@ -2,6 +2,7 @@ import { headers } from "next/headers"
 import { Server } from "lucide-react"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
+import { BillingService } from "@/services/billing.service"
 import { ServerCard } from "@/components/display/server-card"
 import { CreateServerForm } from "@/components/form/create-server-form"
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
@@ -9,18 +10,20 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/
 export default async function ServersPage() {
   const session = await auth.api.getSession({ headers: await headers() })
 
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user.id },
+    select: { stripeCustomerId: true },
+  })
+
   const [servers, subscription] = await Promise.all([
     prisma.server.findMany({
       where: { userId: session!.user.id },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.subscription.findUnique({
-      where: { userId: session!.user.id },
-      include: { plan: { include: { planLimit: true } } },
-    }),
+    BillingService.getUserSubscription(user?.stripeCustomerId ?? null),
   ])
 
-  const hasActiveSub = subscription?.status === "active"
+  const hasActiveSub = !!subscription
   const serverMax = subscription?.plan.planLimit?.serverMax ?? 0
   const activeCount = servers.filter((s) => s.status !== "terminated").length
   const atLimit = activeCount >= serverMax

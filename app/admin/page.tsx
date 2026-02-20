@@ -1,14 +1,15 @@
 import prisma from "@/lib/prisma"
+import stripe from "@/lib/stripe"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default async function AdminPage() {
-  const [totalUsers, totalServers, activeSubscriptions] = await Promise.all([
+  const [totalUsers, totalServers, stripeSubscriptions] = await Promise.all([
     prisma.user.count(),
     prisma.server.count(),
-    prisma.subscription.count({
-      where: { status: "active" },
-    }),
+    stripe.subscriptions.list({ limit: 100, status: "active" }),
   ])
+
+  const activeSubscriptions = stripeSubscriptions.data.length
 
   const stats = [
     { title: "Total Users", value: totalUsers },

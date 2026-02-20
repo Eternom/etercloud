@@ -1,23 +1,16 @@
-import prisma from "@/lib/prisma"
+import { BillingService } from "@/services/billing.service"
 import { SubscriptionTable } from "@/components/display/subscription-table"
+import { PageHeader } from "@/components/display/page-header"
 
 export default async function AdminSubscriptionsPage() {
-  const subscriptions = await prisma.subscription.findMany({
-    include: {
-      user: { select: { name: true, email: true } },
-      plan: { select: { name: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  })
+  const subscriptions = await BillingService.listAllSubscriptions()
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Subscriptions</h1>
-        <p className="text-muted-foreground">Platform-wide subscription overview</p>
+    <>
+      <PageHeader title="Subscriptions" description="Platform-wide subscription overview." />
+      <div className="p-8">
+        <SubscriptionTable subscriptions={subscriptions} />
       </div>
-
-      <SubscriptionTable subscriptions={subscriptions} />
-    </div>
+    </>
   )
 }
