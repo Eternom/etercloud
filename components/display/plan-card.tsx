@@ -39,34 +39,46 @@ export function PlanCard({
   ]
 
   return (
-    <Card className={cn("relative gap-4", isCurrent && "border-primary", className)}>
+    <Card className={cn(
+      "relative overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10",
+      isCurrent && "ring-1 ring-primary",
+      className,
+    )}>
       {isCurrent && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-medium text-primary-foreground">
-          Plan actuel
-        </span>
+        <div className="absolute top-0 right-0">
+          <div className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-8 py-1 rotate-45 translate-x-8 translate-y-2">
+            Actuel
+          </div>
+        </div>
       )}
-      <CardHeader>
-        <CardTitle className="text-lg">{name}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-        <p className="mt-2 text-3xl font-bold">
-          {(priceInCents / 100).toFixed(2)}€
-          <span className="text-sm font-normal text-muted-foreground"> / mois</span>
-        </p>
+      <CardHeader className="pt-10">
+        <CardTitle className="text-2xl font-black">{name}</CardTitle>
+        <CardDescription className="text-base min-h-[3rem]">{description}</CardDescription>
+        <div className="mt-4 flex items-baseline gap-1">
+          <span className="text-5xl font-black tracking-tight">{(priceInCents / 100).toFixed(2)}</span>
+          <span className="text-xl font-bold text-muted-foreground">€</span>
+          <span className="text-muted-foreground ml-1">/ mois</span>
+        </div>
       </CardHeader>
       <CardContent>
-        <ul className="flex flex-col gap-2">
+        <ul className="space-y-3">
           {features.map((feature) => (
-            <li key={feature} className="flex items-center gap-2 text-sm">
-              <Check className="size-4 text-primary" />
+            <li key={feature} className="flex items-center gap-3 font-medium text-foreground/80">
+              <div className="flex size-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Check className="size-3" />
+              </div>
               {feature}
             </li>
           ))}
         </ul>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pb-8 pt-2">
         <Button
-          className="w-full"
-          variant={isCurrent ? "outline" : "default"}
+          className={cn(
+            "w-full rounded-full py-6 text-base font-bold",
+            isCurrent ? "bg-muted/50 text-foreground" : "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:opacity-90"
+          )}
+          variant="ghost"
           disabled={isCurrent}
         >
           {isCurrent ? "Plan actuel" : "Choisir ce plan"}

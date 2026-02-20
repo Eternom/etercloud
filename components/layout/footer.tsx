@@ -24,85 +24,93 @@ const FOOTER_LINKS = {
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-
+    <footer className="bg-card py-24 border-t border-border/40">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Main grid */}
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-
+        <div className="grid gap-16 lg:grid-cols-12">
           {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 text-base font-bold">
-              <HardDrive className="size-5" />
+          <div className="lg:col-span-4">
+            <Link href="/" className="flex items-center gap-2 text-2xl font-black tracking-tight">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                <HardDrive className="size-6" />
+              </div>
               EterCloud
-            </div>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Game server hosting, simplified. Deploy in seconds, pay monthly, cancel anytime.
+            </Link>
+            <p className="mt-6 max-w-xs text-lg leading-relaxed text-muted-foreground">
+              Game server hosting, simplified. <br />
+              Professional performance for everyone.
             </p>
           </div>
 
-          {/* Platform */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-              Platform
-            </h3>
-            <ul className="mt-4 space-y-3">
-              {FOOTER_LINKS.platform.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Links sections */}
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-8">
+            {/* Platform */}
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
+                Platform
+              </h3>
+              <ul className="mt-6 space-y-4">
+                {FOOTER_LINKS.platform.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-muted-foreground transition-all hover:text-primary hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Support & Account */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-              Support
-            </h3>
-            <ul className="mt-4 space-y-3">
-              {FOOTER_LINKS.support.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Support */}
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
+                Support
+              </h3>
+              <ul className="mt-6 space-y-4">
+                {FOOTER_LINKS.support.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-muted-foreground transition-all hover:text-primary hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Legal */}
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-              Legal
-            </h3>
-            <ul className="mt-4 space-y-3">
-              {FOOTER_LINKS.legal.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Legal */}
+            <div className="col-span-2 sm:col-span-1">
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
+                Legal
+              </h3>
+              <ul className="mt-6 space-y-4">
+                {FOOTER_LINKS.legal.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-muted-foreground transition-all hover:text-primary hover:translate-x-1 inline-block"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-8 text-xs text-muted-foreground sm:flex-row">
+        <div className="mt-20 flex flex-col items-center justify-between gap-6 border-t border-border/40 pt-10 text-sm font-medium text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} EterCloud. All rights reserved.</p>
-          <p>Powered by Pterodactyl.</p>
+          <div className="flex items-center gap-6">
+            <p className="hover:text-primary transition-colors cursor-default">Powered by Pterodactyl</p>
+            <div className="size-1.5 rounded-full bg-border" />
+            <p className="hover:text-primary transition-colors cursor-default">Stripe Secure Payments</p>
+          </div>
         </div>
       </div>
     </footer>

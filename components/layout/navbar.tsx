@@ -46,37 +46,36 @@ export function Navbar({ isLoggedIn }: PublicNavbarProps) {
           </Link>
 
           {/* Center — Nav */}
-          <nav className="flex items-center justify-center gap-1">
-            {NAV_LINKS.map(({ href, label, icon: Icon }) => (
+          <nav className="flex items-center justify-center gap-8">
+            {NAV_LINKS.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+                  "text-sm transition-colors hover:text-primary",
                   isActive(href)
-                    ? "bg-accent font-medium text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "font-semibold text-primary"
+                    : "font-medium text-muted-foreground",
                 )}
               >
-                <Icon className="size-3.5 shrink-0" />
                 {label}
               </Link>
             ))}
           </nav>
 
           {/* Right — CTAs */}
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-4">
             {isLoggedIn ? (
-              <Button asChild>
+              <Button asChild className="rounded-full px-6">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <>
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" asChild className="text-muted-foreground hover:text-primary">
                   <Link href="/login">Sign in</Link>
                 </Button>
-                <Button asChild>
-                  <Link href="/signup">Get started</Link>
+                <Button asChild className="rounded-full bg-secondary px-6 text-secondary-foreground hover:opacity-90">
+                  <Link href="/signup">Sign up</Link>
                 </Button>
               </>
             )}

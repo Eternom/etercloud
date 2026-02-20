@@ -2,11 +2,14 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { updateProfileSchema, type UpdateProfileData } from "@/helpers/validations/profile"
 import { authClient } from "@/services/auth-client.service"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 
 interface UpdateProfileFormProps {
   currentName: string
@@ -15,24 +18,26 @@ interface UpdateProfileFormProps {
 
 export function UpdateProfileForm({ currentName, email }: UpdateProfileFormProps) {
   const router = useRouter()
-  const [name, setName] = useState(currentName)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UpdateProfileData>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: { name: currentName },
+  })
+
+  const onSubmit = async (data: UpdateProfileData) => {
+    setApiError(null)
     setSuccess(false)
 
-    if (!name.trim() || name === currentName) return
-
-    setIsLoading(true)
-    const { error } = await authClient.updateUser({ name: name.trim() })
-    setIsLoading(false)
+    const { error } = await authClient.updateUser({ name: data.name })
 
     if (error) {
-      setError(error.message ?? "Failed to update profile.")
+      setApiError(error.message ?? "Failed to update profile.")
     } else {
       setSuccess(true)
       router.refresh()
@@ -40,29 +45,33 @@ export function UpdateProfileForm({ currentName, email }: UpdateProfileFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-sm">
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" value={email} disabled />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="name">Display name</Label>
-        <Input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          minLength={2}
-          maxLength={100}
-        />
-      </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
-      {success && <p className="text-sm text-green-600">Profile updated.</p>}
-      <Button type="submit" disabled={isLoading || !name.trim() || name === currentName} className="self-start">
-        {isLoading && <Spinner />}
-        Save changes
-      </Button>
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm">
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input id="email" type="email" value={email} disabled />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="name">Display name</FieldLabel>
+          <Input
+            id="name"
+            type="text"
+            disabled={isSubmitting}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? "name-error" : undefined}
+            {...register("name")}
+          />
+          <FieldError id="name-error" message={errors.name?.message} />
+        </Field>
+        <Field>
+          <Button type="submit" disabled={isSubmitting} className="w-fit">
+            {isSubmitting && <Spinner />}
+            Save changes
+          </Button>
+          <FieldError message={apiError ?? undefined} />
+          {success && <p className="text-sm text-green-600">Profile updated.</p>}
+        </Field>
+      </FieldGroup>
     </form>
   )
 }

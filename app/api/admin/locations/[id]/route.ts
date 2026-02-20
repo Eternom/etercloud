@@ -20,11 +20,15 @@ export async function PATCH(
   }
 
   const { id } = await params
-  const { active } = await req.json() as { active: boolean }
+  const { active } = await req.json() as {
+    active?: boolean
+  }
 
   const location = await prisma.location.update({
     where: { id },
-    data: { active },
+    data: {
+      ...(active !== undefined && { active }),
+    },
   })
 
   return NextResponse.json(location)

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import prisma from "@/lib/prisma"
 import { EditPlanForm } from "@/components/form/edit-plan-form"
 import type { AdminPlan } from "@/types/admin"
+import { PageHeader } from "@/components/display/page-header"
 
 interface Props {
   params: Promise<{ id: string }>
@@ -28,15 +29,11 @@ export default async function EditPlanPage({ params }: Props) {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Edit plan</h1>
-        <p className="text-muted-foreground">
-          Updating the price archives the current Stripe price and creates a new one.
-        </p>
+    <>
+      <PageHeader title="Edit plan" description="Updating the price archives the current Stripe price and creates a new one." />
+      <div className="p-8">
+        <EditPlanForm plan={adminPlan} />
       </div>
-
-      <EditPlanForm plan={adminPlan} />
-    </div>
+    </>
   )
 }

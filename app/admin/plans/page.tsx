@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma"
 import { PlanTable } from "@/components/display/plan-table"
 import { CreatePlanForm } from "@/components/form/create-plan-form"
 import type { AdminPlan } from "@/types/admin"
+import { PageHeader } from "@/components/display/page-header"
 
 export default async function AdminPlansPage() {
   const plans = await prisma.plan.findMany({
@@ -20,19 +21,15 @@ export default async function AdminPlansPage() {
   }))
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Plans</h1>
-          <p className="text-muted-foreground">
-            Subscription plans available to users. Each plan creates a Stripe product and price.
-          </p>
-        </div>
+    <>
+      <PageHeader
+        title="Plans"
+        description="Subscription plans available to users."
+        action={<CreatePlanForm />}
+      />
+      <div className="p-8">
+        <PlanTable plans={adminPlans} />
       </div>
-
-      <CreatePlanForm />
-
-      <PlanTable plans={adminPlans} />
-    </div>
+    </>
   )
 }

@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma"
 import { ServerTable } from "@/components/display/server-table"
+import { PageHeader } from "@/components/display/page-header"
 
 export default async function AdminServersPage() {
   const servers = await prisma.server.findMany({
@@ -12,13 +13,11 @@ export default async function AdminServersPage() {
   })
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Servers</h1>
-        <p className="text-muted-foreground">Platform-wide server overview</p>
+    <>
+      <PageHeader title="Servers" description="Platform-wide server overview." />
+      <div className="p-8">
+        <ServerTable servers={servers} />
       </div>
-
-      <ServerTable servers={servers} />
-    </div>
+    </>
   )
 }

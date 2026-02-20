@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma"
 import stripe from "@/lib/stripe"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageHeader } from "@/components/display/page-header"
 
 export default async function AdminPage() {
   const [totalUsers, totalServers, stripeSubscriptions] = await Promise.all([
@@ -18,26 +19,24 @@ export default async function AdminPage() {
   ]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Admin Overview</h1>
-        <p className="text-muted-foreground">Platform statistics and quick metrics</p>
+    <>
+      <PageHeader title="Overview" description="Platform statistics and quick metrics." />
+      <div className="p-8">
+        <div className="grid gap-4 md:grid-cols-3">
+          {stats.map((stat) => (
+            <Card key={stat.title}>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+    </>
   )
 }
