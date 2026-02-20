@@ -10,7 +10,6 @@ import { PageHeader } from "@/components/display/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
 
 function mbToGb(mb: number) {
   return (mb / 1024).toFixed(1)
@@ -140,7 +139,6 @@ export default async function DashboardPage() {
                 </div>
                 <Progress value={pct(usedRam, ramMax)} />
               </div>
-              <Separator />
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1.5 text-muted-foreground">
@@ -152,7 +150,6 @@ export default async function DashboardPage() {
                 </div>
                 <Progress value={pct(usedCpu, cpuMax)} />
               </div>
-              <Separator />
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1.5 text-muted-foreground">
