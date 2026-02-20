@@ -1,11 +1,12 @@
 import { headers } from "next/headers"
-import { Server } from "lucide-react"
+import { Plus, Server, User } from "lucide-react"
 import Link from "next/link"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { BillingService } from "@/services/billing.service"
+import { ptero } from "@/services/pterodactyl.service"
 import { ServerCard } from "@/components/display/server-card"
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
+import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/display/page-header"
 import { Button } from "@/components/ui/button"
 
@@ -14,22 +15,24 @@ export default async function ServersPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session!.user.id },
-    select: { stripeCustomerId: true },
+    select: { stripeCustomerId: true, pterodactylUserId: true },
   })
 
-  const [servers, subscription] = await Promise.all([
+  const [servers, subscription, pteroUser] = await Promise.all([
     prisma.server.findMany({
       where: { userId: session!.user.id },
       orderBy: { createdAt: "desc" },
     }),
     BillingService.getUserSubscription(user?.stripeCustomerId ?? null),
+    user?.pterodactylUserId ? ptero.getUser(user.pterodactylUserId) : null,
   ])
 
   const hasActiveSub = !!subscription
   const serverMax = subscription?.plan.planLimit?.serverMax ?? 0
-  const activeCount = servers.filter((s) => s.status !== "terminated").length
-  const atLimit = activeCount >= serverMax
+  const activeServers = servers.filter((s) => s.status !== "terminated")
+  const atLimit = activeServers.length >= serverMax
   const canCreate = hasActiveSub && !atLimit
+  const emptySlots = Math.max(0, serverMax - activeServers.length)
 
   return (
     <>
@@ -44,10 +47,31 @@ export default async function ServersPage() {
           ) : null
         }
       />
-      <div className="p-8">
-        {servers.length > 0 ? (
+      <div className="flex flex-col gap-6 p-8">
+
+        {/* ── Pterodactyl profile ── */}
+        {pteroUser && (
+          <div className="flex items-center gap-4 rounded-xl border bg-card px-6 py-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <User className="size-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-medium">{pteroUser.first_name} {pteroUser.last_name}</p>
+              <p className="truncate text-sm text-muted-foreground">
+                {pteroUser.email} · @{pteroUser.username}
+              </p>
+            </div>
+            <Badge variant="outline" className="ml-auto shrink-0">
+              Panel #{pteroUser.id}
+            </Badge>
+          </div>
+        )}
+
+        {/* ── Server slots ── */}
+        {hasActiveSub ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {servers.map((server) => (
+            {/* Filled slots */}
+            {activeServers.map((server) => (
               <ServerCard
                 key={server.id}
                 name={server.name}
@@ -58,21 +82,38 @@ export default async function ServersPage() {
                 diskUsageMb={server.diskUsage}
               />
             ))}
+
+            {/* Empty slots */}
+            {emptySlots > 0 && canCreate && (
+              <Link href="/dashboard/servers/new">
+                <div className="flex min-h-36 cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                  <Plus className="size-4" />
+                  <span className="text-sm font-medium">New server</span>
+                </div>
+              </Link>
+            )}
+            {Array.from({ length: atLimit ? emptySlots : Math.max(0, emptySlots - 1) }).map((_, i) => (
+              <div
+                key={`slot-${i}`}
+                className="flex min-h-36 items-center justify-center rounded-xl border-2 border-dashed text-muted-foreground/30"
+              >
+                <Server className="size-5" />
+              </div>
+            ))}
           </div>
         ) : (
-          <Empty className="border">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Server />
-              </EmptyMedia>
-              <EmptyTitle>No servers</EmptyTitle>
-              <EmptyDescription>
-                {hasActiveSub
-                  ? "Create your first server to get started."
-                  : "Subscribe to a plan to create your first server."}
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <div className="flex min-h-48 items-center justify-center rounded-xl border-2 border-dashed text-muted-foreground">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <Server className="size-8 opacity-40" />
+              <p className="text-sm font-medium">No active subscription</p>
+              <p className="text-xs text-muted-foreground">
+                <Link href="/dashboard/billing" className="underline underline-offset-4 hover:text-primary">
+                  Subscribe to a plan
+                </Link>{" "}
+                to create your first server.
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </>
