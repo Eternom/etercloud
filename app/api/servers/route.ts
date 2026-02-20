@@ -5,14 +5,7 @@ import prisma from "@/lib/prisma"
 import { BillingService } from "@/services/billing.service"
 import { ptero } from "@/services/pterodactyl.service"
 import { getOrCreatePteroUserId } from "@/services/user.service"
-
-function requiredEnv(name: string): number {
-  const val = process.env[name]
-  if (!val) throw new Error(`Missing environment variable: ${name}`)
-  const num = parseInt(val, 10)
-  if (isNaN(num)) throw new Error(`Environment variable ${name} must be a number`)
-  return num
-}
+import { createServerSchema } from "@/helpers/validations/server"
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -20,12 +13,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const { name } = await req.json()
-  if (!name || typeof name !== "string" || name.trim().length === 0) {
-    return NextResponse.json({ error: "Server name is required" }, { status: 400 })
-  }
-
-  // Require an active subscription
+  // Require an active subscription first (needed for limit-aware Zod schema)
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { stripeCustomerId: true },
@@ -42,6 +30,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Plan has no resource limits configured" }, { status: 500 })
   }
 
+  // Calculate already-used resources across active servers
+  const used = await prisma.server.aggregate({
+    where: { userId: session.user.id, status: { not: "terminated" } },
+    _sum: {
+      memoryUsage: true,
+      cpuUsage: true,
+      diskUsage: true,
+      databaseUsage: true,
+      backupUsage: true,
+      allocatedUsage: true,
+    },
+  })
+
+  const remaining = {
+    memoryMax: limit.memoryMax - (used._sum.memoryUsage ?? 0),
+    cpuMax: limit.cpuMax - (used._sum.cpuUsage ?? 0),
+    diskMax: limit.diskMax - (used._sum.diskUsage ?? 0),
+    databaseMax: limit.databaseMax - (used._sum.databaseUsage ?? 0),
+    backupMax: limit.backupMax - (used._sum.backupUsage ?? 0),
+    allocatedMax: limit.allocatedMax - (used._sum.allocatedUsage ?? 0),
+  }
+
+  // Validate body with Zod schema built from remaining (not raw plan limits)
+  const parsed = createServerSchema(remaining).safeParse(await req.json())
+
+  if (!parsed.success) {
+    const message = parsed.error.errors[0]?.message ?? "Invalid request"
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
+
+  const { name, locationId, gameCategoryId, memory, cpu, disk, databases, backups, allocations } = parsed.data
+
   // Check server count against plan limit
   const serverCount = await prisma.server.count({
     where: { userId: session.user.id, status: { not: "terminated" } },
@@ -55,11 +75,21 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const locationId = requiredEnv("PTERODACTYL_LOCATION_ID")
-    const nestId = requiredEnv("PTERODACTYL_NEST_ID")
-    const eggId = requiredEnv("PTERODACTYL_EGG_ID")
+    // Resolve location and game category from DB
+    const [location, gameCategory] = await Promise.all([
+      prisma.location.findUnique({ where: { id: locationId, active: true } }),
+      prisma.gameCategory.findUnique({ where: { id: gameCategoryId, active: true } }),
+    ])
 
-    const egg = await ptero.getEggWithVariables(nestId, eggId)
+    if (!location) {
+      return NextResponse.json({ error: "Selected location is not available" }, { status: 400 })
+    }
+    if (!gameCategory) {
+      return NextResponse.json({ error: "Selected game category is not available" }, { status: 400 })
+    }
+
+    // Fetch egg variables for environment defaults
+    const egg = await ptero.getEggWithVariables(gameCategory.pteroNestId, gameCategory.pteroEggId)
     const environment = Object.fromEntries(
       egg.variables.map((v) => [v.env_variable, v.default_value]),
     )
@@ -69,23 +99,23 @@ export async function POST(req: NextRequest) {
     const pteroServer = await ptero.createServer({
       name: name.trim(),
       userId: pteroUserId,
-      eggId,
-      dockerImage: egg.docker_image,
-      startupCommand: egg.startup,
+      eggId: gameCategory.pteroEggId,
+      dockerImage: gameCategory.dockerImage,
+      startupCommand: gameCategory.startup,
       environment,
       limits: {
-        memory: limit.memoryMax,
+        memory,
         swap: 0,
-        disk: limit.diskMax,
+        disk,
         io: 500,
-        cpu: limit.cpuMax,
+        cpu,
       },
       featureLimits: {
-        databases: limit.databaseMax,
-        backups: limit.backupMax,
-        allocations: limit.allocatedMax,
+        databases,
+        backups,
+        allocations,
       },
-      deploy: { locations: [locationId] },
+      deploy: { locations: [location.pteroId] },
     })
 
     const server = await prisma.server.create({
@@ -94,13 +124,15 @@ export async function POST(req: NextRequest) {
         identifierPtero: pteroServer.identifier,
         idPtero: String(pteroServer.id),
         status: "active",
-        cpuUsage: 0,
-        memoryUsage: 0,
-        diskUsage: 0,
-        databaseUsage: 0,
-        backupUsage: 0,
-        allocatedUsage: 0,
+        cpuUsage: cpu,
+        memoryUsage: memory,
+        diskUsage: disk,
+        databaseUsage: databases,
+        backupUsage: backups,
+        allocatedUsage: allocations,
         userId: session.user.id,
+        locationId: location.id,
+        gameCategoryId: gameCategory.id,
       },
     })
 

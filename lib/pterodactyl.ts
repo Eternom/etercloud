@@ -19,8 +19,17 @@ export async function pteroFetch<T>(path: string, options: RequestInit = {}): Pr
   })
 
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`Pterodactyl ${res.status} on ${path}: ${body}`)
+    let message = `Pterodactyl error ${res.status}`
+    try {
+      const json = await res.json()
+      if (Array.isArray(json?.errors) && json.errors.length > 0) {
+        const details = json.errors.map((e: { detail?: string }) => e.detail).filter(Boolean)
+        if (details.length > 0) message = details.join(" ")
+      }
+    } catch {
+      // body was not JSON — keep default message
+    }
+    throw new Error(message)
   }
 
   if (res.status === 204) return undefined as T
