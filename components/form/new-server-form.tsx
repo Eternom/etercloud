@@ -14,7 +14,7 @@ import { createServerSchema, type CreateServerData, type PlanLimits } from "@/he
 interface Option {
   id: string
   name: string
-  description: string
+  description: string | null
 }
 
 interface NewServerFormProps {
