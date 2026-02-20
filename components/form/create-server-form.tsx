@@ -26,9 +26,9 @@ export function CreateServerForm({ disabled, disabledReason }: CreateServerFormP
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       })
-      const data = await res.json()
       if (!res.ok) {
-        setError(data.error ?? "Failed to create server")
+        const data = await res.json().catch(() => null)
+        setError(data?.error ?? "Failed to create server")
         return
       }
       setOpen(false)
