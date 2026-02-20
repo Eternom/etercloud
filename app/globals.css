@@ -71,58 +71,58 @@
  */
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
 
   /* Backgrounds */
-  --background:         oklch(0.290 0.007 264);
-  --foreground:         oklch(0.885 0.005 264);
+  --background:         oklch(1 0 0);
+  --foreground:         oklch(0.15 0.01 264);
 
-  --card:               oklch(0.320 0.007 264);
-  --card-foreground:    oklch(0.885 0.005 264);
+  --card:               oklch(1 0 0);
+  --card-foreground:    oklch(0.15 0.01 264);
 
-  --popover:            oklch(0.220 0.006 264);
-  --popover-foreground: oklch(0.885 0.005 264);
+  --popover:            oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.01 264);
 
-  /* Primary — Discord Blurple */
-  --primary:            oklch(0.580 0.190 282);
-  --primary-foreground: oklch(0.980 0 0);
+  /* Primary — Vela Purple/Blue */
+  --primary:            oklch(0.58 0.23 280);
+  --primary-foreground: oklch(0.98 0 0);
 
-  /* Secondary */
-  --secondary:            oklch(0.370 0.008 264);
-  --secondary-foreground: oklch(0.885 0.005 264);
+  /* Secondary — Vela Pink */
+  --secondary:            oklch(0.65 0.22 350);
+  --secondary-foreground: oklch(0.98 0 0);
 
   /* Muted */
-  --muted:            oklch(0.320 0.007 264);
-  --muted-foreground: oklch(0.612 0.008 264);
+  --muted:            oklch(0.97 0.005 264);
+  --muted-foreground: oklch(0.45 0.01 264);
 
-  /* Accent — hover */
-  --accent:            oklch(0.370 0.008 264);
-  --accent-foreground: oklch(0.885 0.005 264);
+  /* Accent — subtle background highlights */
+  --accent:            oklch(0.97 0.005 264);
+  --accent-foreground: oklch(0.15 0.01 264);
 
-  /* Destructive — Discord Red */
+  /* Destructive */
   --destructive: oklch(0.587 0.215 25);
 
   /* Borders & inputs */
-  --border: oklch(0.220 0.006 264);
-  --input:  oklch(0.400 0.008 264);
-  --ring:   oklch(0.580 0.190 282);
+  --border: oklch(0.92 0.005 264);
+  --input:  oklch(0.92 0.005 264);
+  --ring:   oklch(0.58 0.23 280);
 
-  /* Charts — Discord brand palette */
-  --chart-1: oklch(0.580 0.190 282);
-  --chart-2: oklch(0.862 0.198 154);
+  /* Charts */
+  --chart-1: oklch(0.58 0.23 280);
+  --chart-2: oklch(0.65 0.22 350);
   --chart-3: oklch(0.622 0.268 345);
   --chart-4: oklch(0.917 0.187 98);
   --chart-5: oklch(0.587 0.215 25);
 
-  /* Sidebar — one step darker than background */
-  --sidebar:                    oklch(0.250 0.007 264);
-  --sidebar-foreground:         oklch(0.885 0.005 264);
-  --sidebar-primary:            oklch(0.580 0.190 282);
-  --sidebar-primary-foreground: oklch(0.980 0 0);
-  --sidebar-accent:             oklch(0.370 0.008 264);
-  --sidebar-accent-foreground:  oklch(0.885 0.005 264);
-  --sidebar-border:             oklch(0.220 0.006 264);
-  --sidebar-ring:               oklch(0.580 0.190 282);
+  /* Sidebar */
+  --sidebar:                    oklch(0.98 0.005 264);
+  --sidebar-foreground:         oklch(0.15 0.01 264);
+  --sidebar-primary:            oklch(0.58 0.23 280);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent:             oklch(0.95 0.005 264);
+  --sidebar-accent-foreground:  oklch(0.15 0.01 264);
+  --sidebar-border:             oklch(0.92 0.005 264);
+  --sidebar-ring:               oklch(0.58 0.23 280);
 }
 
 .dark {

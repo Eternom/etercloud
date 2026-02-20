@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Monitor, LogOut, Loader2 } from "lucide-react"
-import { authClient } from "@/services/auth-client.service"
+import { Monitor, LogOut, Loader2, Eye, EyeOff } from "lucide-react"
+import { authClient, useSession } from "@/services/auth-client.service"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { Badge } from "@/components/ui/badge"
@@ -15,7 +15,6 @@ interface Session {
   ipAddress?: string | null
   userAgent?: string | null
   createdAt: Date
-  current?: boolean
 }
 
 function formatDate(date: Date) {
@@ -37,10 +36,12 @@ function parseDevice(userAgent?: string | null): string {
 
 export function SessionsList() {
   const router = useRouter()
+  const { data: activeSession } = useSession()
   const [sessions, setSessions] = useState<Session[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [revokingId, setRevokingId] = useState<string | null>(null)
   const [isRevokingOthers, setIsRevokingOthers] = useState(false)
+  const [showIps, setShowIps] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -76,42 +77,59 @@ export function SessionsList() {
     )
   }
 
-  const otherSessions = sessions.filter((s) => !s.current)
+  const activeToken = activeSession?.session?.token
+  const otherSessions = sessions.filter((s) => s.token !== activeToken)
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-muted-foreground">{sessions.length} active session{sessions.length !== 1 ? "s" : ""}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowIps(!showIps)}
+          className="h-7 gap-1.5 text-xs text-muted-foreground"
+        >
+          {showIps ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+          {showIps ? "Hide IPs" : "Show IPs"}
+        </Button>
+      </div>
       <div className="flex flex-col gap-2">
-        {sessions.map((session) => (
-          <div
-            key={session.id}
-            className="flex items-center justify-between rounded-lg border p-3"
-          >
-            <div className="flex items-center gap-3">
-              <Monitor className="size-4 shrink-0 text-muted-foreground" />
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{parseDevice(session.userAgent)}</span>
-                  {session.current && (
-                    <Badge variant="secondary" className="text-xs">Current</Badge>
-                  )}
+        {sessions.map((session) => {
+          const isCurrent = session.token === activeToken
+          return (
+            <div
+              key={session.id}
+              className="flex items-center justify-between rounded-lg border p-3"
+            >
+              <div className="flex items-center gap-3">
+                <Monitor className="size-4 shrink-0 text-muted-foreground" />
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{parseDevice(session.userAgent)}</span>
+                    {isCurrent && (
+                      <Badge variant="secondary" className="text-xs">Current session</Badge>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {showIps ? (session.ipAddress ?? "Unknown IP") : "••••••••••"} · {formatDate(session.createdAt)}
+                  </span>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {session.ipAddress ?? "Unknown IP"} · {formatDate(session.createdAt)}
-                </span>
               </div>
+              {!isCurrent && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleRevoke(session.token, session.id)}
+                  disabled={revokingId === session.id}
+                >
+                  {revokingId === session.id ? <Spinner /> : <LogOut className="size-4" />}
+                </Button>
+              )}
             </div>
-            {!session.current && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => handleRevoke(session.token, session.id)}
-                disabled={revokingId === session.id}
-              >
-                {revokingId === session.id ? <Spinner /> : <LogOut className="size-4" />}
-              </Button>
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {otherSessions.length > 0 && (

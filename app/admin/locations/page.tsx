@@ -1,6 +1,7 @@
 import { ptero } from "@/services/pterodactyl.service"
 import prisma from "@/lib/prisma"
 import { LocationTable, type MergedLocation } from "@/components/display/location-table"
+import { PageHeader } from "@/components/display/page-header"
 
 export default async function AdminLocationsPage() {
   const [pteroLocations, dbLocations] = await Promise.all([
@@ -26,15 +27,11 @@ export default async function AdminLocationsPage() {
   })
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Locations</h1>
-        <p className="text-muted-foreground">
-          Pterodactyl locations available for server deployment. Sync a location to make it selectable.
-        </p>
+    <>
+      <PageHeader title="Locations" description="Pterodactyl locations available for server deployment." />
+      <div className="p-8">
+        <LocationTable locations={locations} />
       </div>
-
-      <LocationTable locations={locations} />
-    </div>
+    </>
   )
 }

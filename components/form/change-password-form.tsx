@@ -1,76 +1,137 @@
 "use client"
 
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff } from "lucide-react"
+import { changePasswordSchema, type ChangePasswordData } from "@/helpers/validations/profile"
 import { authClient } from "@/services/auth-client.service"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 
 export function ChangePasswordForm() {
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ChangePasswordData>({
+    resolver: zodResolver(changePasswordSchema),
+  })
+
+  const onSubmit = async (data: ChangePasswordData) => {
+    setApiError(null)
     setSuccess(false)
 
-    setIsLoading(true)
     const { error } = await authClient.changePassword({
-      currentPassword,
-      newPassword,
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
       revokeOtherSessions: false,
     })
-    setIsLoading(false)
 
     if (error) {
-      setError(error.message ?? "Failed to change password.")
+      setApiError(error.message ?? "Failed to change password.")
     } else {
       setSuccess(true)
-      setCurrentPassword("")
-      setNewPassword("")
+      reset()
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-sm">
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="current-password">Current password</Label>
-        <Input
-          id="current-password"
-          type="password"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          required
-          autoComplete="current-password"
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="new-password">New password</Label>
-        <Input
-          id="new-password"
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-          minLength={6}
-          autoComplete="new-password"
-        />
-      </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
-      {success && <p className="text-sm text-green-600">Password changed successfully.</p>}
-      <Button
-        type="submit"
-        disabled={isLoading || !currentPassword || !newPassword}
-        className="self-start"
-      >
-        {isLoading && <Spinner />}
-        Change password
-      </Button>
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm">
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="current-password">Current password</FieldLabel>
+          <div className="relative w-full">
+            <Input
+              id="current-password"
+              type={showCurrentPassword ? "text" : "password"}
+              autoComplete="current-password"
+              disabled={isSubmitting}
+              aria-invalid={!!errors.currentPassword}
+              aria-describedby={errors.currentPassword ? "current-password-error" : undefined}
+              {...register("currentPassword")}
+            />
+            <Button
+              type="button"
+              variant="link"
+              size="icon"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              aria-label={showCurrentPassword ? "Hide password" : "Show password"}
+              className="absolute right-0 top-1/2 -translate-y-1/2"
+            >
+              {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </Button>
+          </div>
+          <FieldError id="current-password-error" message={errors.currentPassword?.message} />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="new-password">New password</FieldLabel>
+          <div className="relative w-full">
+            <Input
+              id="new-password"
+              type={showNewPassword ? "text" : "password"}
+              autoComplete="new-password"
+              disabled={isSubmitting}
+              aria-invalid={!!errors.newPassword}
+              aria-describedby={errors.newPassword ? "new-password-error" : undefined}
+              {...register("newPassword")}
+            />
+            <Button
+              type="button"
+              variant="link"
+              size="icon"
+              onClick={() => setShowNewPassword(!showNewPassword)}
+              aria-label={showNewPassword ? "Hide password" : "Show password"}
+              className="absolute right-0 top-1/2 -translate-y-1/2"
+            >
+              {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </Button>
+          </div>
+          <FieldError id="new-password-error" message={errors.newPassword?.message} />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="confirm-new-password">Confirm new password</FieldLabel>
+          <div className="relative w-full">
+            <Input
+              id="confirm-new-password"
+              type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
+              disabled={isSubmitting}
+              aria-invalid={!!errors.confirmNewPassword}
+              aria-describedby={errors.confirmNewPassword ? "confirm-new-password-error" : undefined}
+              {...register("confirmNewPassword")}
+            />
+            <Button
+              type="button"
+              variant="link"
+              size="icon"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              className="absolute right-0 top-1/2 -translate-y-1/2"
+            >
+              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </Button>
+          </div>
+          <FieldError id="confirm-new-password-error" message={errors.confirmNewPassword?.message} />
+        </Field>
+        <Field>
+          <Button type="submit" disabled={isSubmitting} className="w-fit">
+            {isSubmitting && <Spinner />}
+            Change password
+          </Button>
+          <FieldError message={apiError ?? undefined} />
+          {success && <p className="text-sm text-green-600">Password changed successfully.</p>}
+        </Field>
+      </FieldGroup>
     </form>
   )
 }

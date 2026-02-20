@@ -24,7 +24,7 @@ export default async function AdminLayout({
           role: session.user.role ?? "admin",
         }}
       />
-      <main className="flex-1 overflow-y-auto bg-background p-8">
+      <main className="flex-1 overflow-y-auto bg-background">
         {children}
       </main>
     </div>
