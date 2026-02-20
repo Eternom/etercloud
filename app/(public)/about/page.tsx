@@ -57,7 +57,7 @@ export default function AboutPage() {
         </div>
         <div className="grid gap-8 sm:grid-cols-3">
           {pillars.map((p, i) => (
-            <Card key={p.title} className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10">
+            <Card key={p.title} className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10">
               <CardHeader className="pb-2 pt-8">
                 <div className={`mb-4 flex size-14 items-center justify-center rounded-2xl ${i % 2 === 0 ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'} group-hover:bg-primary group-hover:text-white transition-colors`}>
                   <p.icon className="size-7" />

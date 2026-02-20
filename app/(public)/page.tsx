@@ -240,7 +240,7 @@ export default async function HomePage() {
       <section id="features" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
-            <Card key={f.title} className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10">
+            <Card key={f.title} className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10">
               <div className="relative h-48 w-full overflow-hidden">
                 <img
                   src={f.image}
@@ -405,7 +405,7 @@ export default async function HomePage() {
               {locations.map((loc, i) => (
                 <Card
                   key={loc.id}
-                  className="group relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10"
+                  className="group relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10"
                 >
                   <img
                     src={`https://images.unsplash.com/photo-${[

@@ -22,7 +22,7 @@ export default function ContactPage() {
       {/* ── Cards ── */}
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
         <div className="grid max-w-3xl gap-8 sm:grid-cols-2">
-          <Card className="overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10">
+          <Card className="overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-shadow hover:shadow-2xl hover:shadow-primary/10">
             <CardHeader className="pb-2 pt-8">
               <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <Mail className="size-7" />
@@ -42,7 +42,7 @@ export default function ContactPage() {
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10">
+          <Card className="overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-shadow hover:shadow-2xl hover:shadow-primary/10">
             <CardHeader className="pb-2 pt-8">
               <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-secondary/10 text-secondary">
                 <Clock className="size-7" />
