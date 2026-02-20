@@ -39,8 +39,7 @@ const columns: ColumnDef<AdminSubscription>[] = [
     accessorKey: "periodEnd",
     header: "Period End",
     cell: ({ row }) => {
-      const date = row.getValue<Date | null>("periodEnd")
-      return date ? new Date(date).toLocaleDateString() : "—"
+      return new Date(row.getValue<Date>("periodEnd")).toLocaleDateString()
     },
   },
   {

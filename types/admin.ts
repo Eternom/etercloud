@@ -16,7 +16,7 @@ export type AdminSubscription = {
   user: { name: string; email: string }
   plan: { name: string }
   status: string
-  periodEnd: Date | null
+  periodEnd: Date
   cancelAtPeriodEnd: boolean
 }
 

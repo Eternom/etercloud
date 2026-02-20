@@ -29,8 +29,8 @@ export default async function BillingPage() {
 
   const subscription = await BillingService.getUserSubscription(user?.stripeCustomerId ?? null)
 
-  const periodEnd = subscription?.latestInvoice
-    ? new Date(subscription.latestInvoice.period_end * 1000)
+  const periodEnd = subscription
+    ? new Date((subscription.stripeSubscription.items.data[0]?.current_period_end ?? 0) * 1000)
     : null
 
   return (

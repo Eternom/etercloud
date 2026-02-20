@@ -28,7 +28,7 @@ export type AdminSubscription = {
   user: { name: string; email: string }
   plan: { name: string }
   status: string
-  periodEnd: Date | null
+  periodEnd: Date
   cancelAtPeriodEnd: boolean
 }
 
@@ -78,7 +78,7 @@ export class BillingService {
    */
   static async listAllSubscriptions(): Promise<AdminSubscription[]> {
     const [stripeResult, users, plans] = await Promise.all([
-      stripe.subscriptions.list({ limit: 100, expand: ["data.latest_invoice"] }),
+      stripe.subscriptions.list({ limit: 100 }),
       prisma.user.findMany({
         select: { name: true, email: true, stripeCustomerId: true },
       }),
@@ -100,11 +100,6 @@ export class BillingService {
       const priceId = sub.items.data[0]?.price.id
       const plan = priceId ? planByPriceId.get(priceId) : undefined
 
-      const latestInvoice =
-        sub.latest_invoice && typeof sub.latest_invoice === "object"
-          ? (sub.latest_invoice as Stripe.Invoice)
-          : null
-
       return {
         id: sub.id,
         user: user
@@ -112,8 +107,8 @@ export class BillingService {
           : { name: "Unknown", email: "Unknown" },
         plan: plan ? { name: plan.name } : { name: "Unknown" },
         status: sub.status,
-        periodEnd: latestInvoice ? new Date(latestInvoice.period_end * 1000) : null,
-        cancelAtPeriodEnd: sub.cancel_at_period_end,
+        periodEnd: new Date((sub.items.data[0]?.current_period_end ?? 0) * 1000),
+        cancelAtPeriodEnd: sub.cancel_at_period_end || !!sub.cancel_at,
       }
     })
   }
