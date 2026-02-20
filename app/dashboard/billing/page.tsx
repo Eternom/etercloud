@@ -1,12 +1,15 @@
+import Link from "next/link"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
+import { BillingService } from "@/services/billing.service"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { SubscribeButton } from "@/components/form/subscribe-button"
-import { CancelButton } from "@/components/form/cancel-button"
-import { ChangePlanButton } from "@/components/form/change-plan-button"
+import { Button } from "@/components/ui/button"
+import { BillingButton } from "@/components/form/billing-button"
+import { PageHeader } from "@/components/display/page-header"
+import { ExternalLink } from "lucide-react"
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
@@ -19,37 +22,30 @@ function formatPrice(cents: number) {
 export default async function BillingPage() {
   const session = await auth.api.getSession({ headers: await headers() })
 
-  const [subscription, plans] = await Promise.all([
-    prisma.subscription.findUnique({
-      where: { userId: session!.user.id },
-      include: { plan: { include: { planLimit: true } } },
-    }),
-    prisma.plan.findMany({
-      include: { planLimit: true },
-      orderBy: { price: "asc" },
-    }),
-  ])
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user.id },
+    select: { stripeCustomerId: true },
+  })
+
+  const subscription = await BillingService.getUserSubscription(user?.stripeCustomerId ?? null)
+
+  const periodEnd = subscription?.latestInvoice
+    ? new Date(subscription.latestInvoice.period_end * 1000)
+    : null
 
   return (
-    <div className="flex flex-col gap-8 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold">Billing</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage your subscription and plan.
-        </p>
-      </div>
-
-      {subscription ? (
-        <>
-          {/* Current subscription */}
+    <>
+      <PageHeader title="Billing" description="Manage your subscription and plan." />
+      <div className="flex flex-col gap-8 p-8 max-w-3xl">
+        {subscription ? (
           <section className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold">Current plan</h2>
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{subscription.plan.name}</CardTitle>
-                  <Badge variant={subscription.status === "active" ? "default" : "secondary"}>
-                    {subscription.status.replace("_", " ")}
+                  <Badge variant={subscription.stripeSubscription.status === "active" ? "default" : "secondary"}>
+                    {subscription.stripeSubscription.status.replace("_", " ")}
                   </Badge>
                 </div>
                 <CardDescription>{subscription.plan.description}</CardDescription>
@@ -68,97 +64,48 @@ export default async function BillingPage() {
                   </ul>
                 )}
                 <Separator />
-                <p className="text-sm text-muted-foreground">
-                  {subscription.cancelAtPeriodEnd
-                    ? `Cancels on ${formatDate(subscription.periodEnd)}`
-                    : `Renews on ${formatDate(subscription.periodEnd)}`}
-                </p>
+                {periodEnd && (
+                  <p className="text-sm text-muted-foreground">
+                    {subscription.stripeSubscription.cancel_at_period_end
+                      ? `Cancels on ${formatDate(periodEnd)}`
+                      : `Renews on ${formatDate(periodEnd)}`}
+                  </p>
+                )}
               </CardContent>
-              {subscription.status === "active" && !subscription.cancelAtPeriodEnd && (
-                <CardFooter>
-                  <CancelButton />
-                </CardFooter>
-              )}
+              <CardFooter>
+                <BillingButton
+                  isLoggedIn={true}
+                  hasSubscription={true}
+                  className="w-full"
+                >
+                  Manage with Stripe <ExternalLink className="ml-2 h-4 w-4" />
+                </BillingButton>
+              </CardFooter>
             </Card>
           </section>
-
-          {/* Plan switching — only when active and not cancelling */}
-          {subscription.status === "active" &&
-            !subscription.cancelAtPeriodEnd &&
-            plans.filter((p) => p.id !== subscription.planId).length > 0 && (
-            <section className="flex flex-col gap-4">
-              <h2 className="text-lg font-semibold">Change plan</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {plans
-                  .filter((p) => p.id !== subscription.planId)
-                  .map((plan) => {
-                    const isUpgrade = plan.price > subscription.plan.price
-                    return (
-                      <Card key={plan.id}>
-                        <CardHeader>
-                          <CardTitle className="text-base">{plan.name}</CardTitle>
-                          <CardDescription>{plan.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex flex-col gap-2">
-                          <p className="text-xl font-bold">
-                            {formatPrice(plan.price)}
-                            <span className="text-sm font-normal text-muted-foreground"> / month</span>
-                          </p>
-                          {plan.planLimit && (
-                            <ul className="space-y-0.5 text-sm text-muted-foreground">
-                              <li>{plan.planLimit.cpuMax}% CPU</li>
-                              <li>{plan.planLimit.memoryMax} MB RAM</li>
-                              <li>{plan.planLimit.diskMax} MB Disk</li>
-                              <li>Up to {plan.planLimit.serverMax} server{plan.planLimit.serverMax > 1 ? "s" : ""}</li>
-                            </ul>
-                          )}
-                        </CardContent>
-                        <CardFooter>
-                          <ChangePlanButton
-                            planId={plan.id}
-                            label={isUpgrade ? "Upgrade" : "Downgrade"}
-                          />
-                        </CardFooter>
-                      </Card>
-                    )
-                  })}
-              </div>
-            </section>
-          )}
-        </>
-      ) : (
-        /* No subscription — show all plans to subscribe */
-        <section className="flex flex-col gap-4">
-          <h2 className="text-lg font-semibold">Choose a plan</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {plans.map((plan) => (
-              <Card key={plan.id}>
-                <CardHeader>
-                  <CardTitle className="text-base">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-2">
-                  <p className="text-xl font-bold">
-                    {formatPrice(plan.price)}
-                    <span className="text-sm font-normal text-muted-foreground"> / month</span>
-                  </p>
-                  {plan.planLimit && (
-                    <ul className="space-y-0.5 text-sm text-muted-foreground">
-                      <li>{plan.planLimit.cpuMax}% CPU</li>
-                      <li>{plan.planLimit.memoryMax} MB RAM</li>
-                      <li>{plan.planLimit.diskMax} MB Disk</li>
-                      <li>Up to {plan.planLimit.serverMax} server{plan.planLimit.serverMax > 1 ? "s" : ""}</li>
-                    </ul>
-                  )}
-                </CardContent>
-                <CardFooter>
-                  <SubscribeButton planId={plan.id} />
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+        ) : (
+          <section className="flex flex-col gap-4">
+            <h2 className="text-lg font-semibold">No active subscription</h2>
+            <Card>
+              <CardHeader>
+                <CardTitle>Subscription required</CardTitle>
+                <CardDescription>
+                  You have not chosen a plan yet. Head to the pricing page to select a plan.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                Billing is handled securely via Stripe. Once you pick a plan you will be redirected
+                to Stripe Checkout to complete your subscription — promo codes are supported.
+              </CardContent>
+              <CardFooter>
+                <Button asChild>
+                  <Link href="/pricing">View plans</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </section>
+        )}
+      </div>
+    </>
   )
 }

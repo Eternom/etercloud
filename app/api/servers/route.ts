@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
+import { BillingService } from "@/services/billing.service"
 import { ptero } from "@/services/pterodactyl.service"
 import { getOrCreatePteroUserId } from "@/services/user.service"
 
@@ -25,12 +26,14 @@ export async function POST(req: NextRequest) {
   }
 
   // Require an active subscription
-  const subscription = await prisma.subscription.findUnique({
-    where: { userId: session.user.id },
-    include: { plan: { include: { planLimit: true } } },
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { stripeCustomerId: true },
   })
 
-  if (!subscription || subscription.status !== "active") {
+  const subscription = await BillingService.getUserSubscription(user?.stripeCustomerId ?? null)
+
+  if (!subscription) {
     return NextResponse.json({ error: "An active subscription is required" }, { status: 403 })
   }
 

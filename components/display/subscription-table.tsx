@@ -38,8 +38,10 @@ const columns: ColumnDef<AdminSubscription>[] = [
   {
     accessorKey: "periodEnd",
     header: "Period End",
-    cell: ({ row }) =>
-      new Date(row.getValue<Date>("periodEnd")).toLocaleDateString(),
+    cell: ({ row }) => {
+      const date = row.getValue<Date | null>("periodEnd")
+      return date ? new Date(date).toLocaleDateString() : "—"
+    },
   },
   {
     accessorKey: "cancelAtPeriodEnd",

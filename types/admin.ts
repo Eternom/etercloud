@@ -1,16 +1,22 @@
-import type { User, SubscriptionStatus, ServerStatus } from "@/lib/prisma"
+import type { ServerStatus } from "@/lib/prisma"
 
-export type AdminUser = Pick<
-  User,
-  "id" | "name" | "email" | "role" | "banned" | "banReason" | "banExpires" | "createdAt"
->
+export type AdminUser = {
+  id: string
+  name: string
+  email: string
+  role: string | null
+  banned: boolean | null
+  banReason: string | null
+  banExpires: Date | null
+  createdAt: Date
+}
 
 export type AdminSubscription = {
   id: string
   user: { name: string; email: string }
   plan: { name: string }
-  status: SubscriptionStatus
-  periodEnd: Date
+  status: string
+  periodEnd: Date | null
   cancelAtPeriodEnd: boolean
 }
 
