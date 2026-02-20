@@ -3,20 +3,22 @@ import { HardDrive } from "lucide-react"
 
 const FOOTER_LINKS = {
   platform: [
-    { href: "/#features", label: "Features" },
-    { href: "/#how-it-works", label: "How it works" },
-    { href: "/#pricing", label: "Pricing" },
-    { href: "/#locations", label: "Locations" },
-    { href: "/#games", label: "Games" },
+    { href: "/", label: "Home" },
+    { href: "/pricing", label: "Pricing" },
+    { href: "/about", label: "About" },
+    { href: "/status", label: "System status" },
   ],
   support: [
-    { href: "/status", label: "System status" },
-    { href: "/#faq", label: "FAQ" },
-  ],
-  account: [
+    { href: "/contact", label: "Contact" },
+    { href: "/dashboard", label: "Dashboard" },
     { href: "/login", label: "Sign in" },
     { href: "/signup", label: "Sign up" },
-    { href: "/dashboard", label: "Dashboard" },
+  ],
+  legal: [
+    { href: "/terms", label: "Terms of Service" },
+    { href: "/cgv", label: "Terms of Sale" },
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/legal-notice", label: "Legal Notice" },
   ],
 }
 
@@ -29,7 +31,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
 
           {/* Brand */}
-          <div className="sm:col-span-2 lg:col-span-1">
+          <div>
             <div className="flex items-center gap-2 text-base font-bold">
               <HardDrive className="size-5" />
               EterCloud
@@ -58,7 +60,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Support & Account */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
               Support
@@ -77,13 +79,13 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Account */}
+          {/* Legal */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-              Account
+              Legal
             </h3>
             <ul className="mt-4 space-y-3">
-              {FOOTER_LINKS.account.map((link) => (
+              {FOOTER_LINKS.legal.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

@@ -5,6 +5,7 @@ import {
   Zap, CreditCard, MapPin, ShieldCheck,
   BarChart3, HardDrive, CheckCircle2, ArrowRight,
 } from "lucide-react"
+
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -99,7 +100,12 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-28 text-center sm:px-6 lg:py-40">
+      <section className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-20 text-center sm:px-6 lg:py-40">
+        {/* Brand — mobile only (replaces hidden top navbar) */}
+        <div className="flex items-center gap-2 text-xl font-bold md:hidden">
+          <HardDrive className="size-5" />
+          EterCloud
+        </div>
         <Badge variant="secondary" className="gap-1.5">
           <Zap className="size-3" />
           Instantly deployed game servers
