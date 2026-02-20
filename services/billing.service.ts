@@ -36,6 +36,7 @@ export class BillingService {
   /**
    * Returns the user's active or trialing Stripe subscription + matched DB Plan.
    * Returns null if the user has no stripeCustomerId or no active subscription.
+   * Fetches up to 10 subscriptions to handle edge cases (e.g. duplicate subs from old system).
    */
   static async getUserSubscription(
     stripeCustomerId: string | null
@@ -44,12 +45,15 @@ export class BillingService {
 
     const result = await stripe.subscriptions.list({
       customer: stripeCustomerId,
-      limit: 1,
+      limit: 10,
       expand: ["data.latest_invoice"],
     })
 
-    const sub = result.data[0]
-    if (!sub || (sub.status !== "active" && sub.status !== "trialing")) return null
+    // Pick the first active or trialing subscription (Stripe returns newest first)
+    const sub = result.data.find(
+      (s) => s.status === "active" || s.status === "trialing"
+    )
+    if (!sub) return null
 
     const priceId = sub.items.data[0]?.price.id
     if (!priceId) return null

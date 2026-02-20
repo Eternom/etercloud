@@ -8,9 +8,9 @@ import { getOrCreatePteroUserId } from "@/services/user.service"
 
 function requiredEnv(name: string): number {
   const val = process.env[name]
-  if (!val) throw new Error(`${name} environment variable is not set`)
+  if (!val) throw new Error(`Missing environment variable: ${name}`)
   const num = parseInt(val, 10)
-  if (isNaN(num)) throw new Error(`${name} must be a number`)
+  if (isNaN(num)) throw new Error(`Environment variable ${name} must be a number`)
   return num
 }
 
@@ -54,59 +54,60 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Get env config
-  const locationId = requiredEnv("PTERODACTYL_LOCATION_ID")
-  const nestId = requiredEnv("PTERODACTYL_NEST_ID")
-  const eggId = requiredEnv("PTERODACTYL_EGG_ID")
+  try {
+    const locationId = requiredEnv("PTERODACTYL_LOCATION_ID")
+    const nestId = requiredEnv("PTERODACTYL_NEST_ID")
+    const eggId = requiredEnv("PTERODACTYL_EGG_ID")
 
-  // Get egg with variables to build the environment map
-  const egg = await ptero.getEggWithVariables(nestId, eggId)
-  const environment = Object.fromEntries(
-    egg.variables.map((v) => [v.env_variable, v.default_value]),
-  )
+    const egg = await ptero.getEggWithVariables(nestId, eggId)
+    const environment = Object.fromEntries(
+      egg.variables.map((v) => [v.env_variable, v.default_value]),
+    )
 
-  // Get or create Pterodactyl user account
-  const pteroUserId = await getOrCreatePteroUserId(session.user.id)
+    const pteroUserId = await getOrCreatePteroUserId(session.user.id)
 
-  // Create server on Pterodactyl
-  const pteroServer = await ptero.createServer({
-    name: name.trim(),
-    userId: pteroUserId,
-    eggId,
-    dockerImage: egg.docker_image,
-    startupCommand: egg.startup,
-    environment,
-    limits: {
-      memory: limit.memoryMax,
-      swap: 0,
-      disk: limit.diskMax,
-      io: 500,
-      cpu: limit.cpuMax,
-    },
-    featureLimits: {
-      databases: limit.databaseMax,
-      backups: limit.backupMax,
-      allocations: limit.allocatedMax,
-    },
-    deploy: { locations: [locationId] },
-  })
+    const pteroServer = await ptero.createServer({
+      name: name.trim(),
+      userId: pteroUserId,
+      eggId,
+      dockerImage: egg.docker_image,
+      startupCommand: egg.startup,
+      environment,
+      limits: {
+        memory: limit.memoryMax,
+        swap: 0,
+        disk: limit.diskMax,
+        io: 500,
+        cpu: limit.cpuMax,
+      },
+      featureLimits: {
+        databases: limit.databaseMax,
+        backups: limit.backupMax,
+        allocations: limit.allocatedMax,
+      },
+      deploy: { locations: [locationId] },
+    })
 
-  // Save server to DB
-  const server = await prisma.server.create({
-    data: {
-      name: pteroServer.name,
-      identifierPtero: pteroServer.identifier,
-      idPtero: String(pteroServer.id),
-      status: "active",
-      cpuUsage: 0,
-      memoryUsage: 0,
-      diskUsage: 0,
-      databaseUsage: 0,
-      backupUsage: 0,
-      allocatedUsage: 0,
-      userId: session.user.id,
-    },
-  })
+    const server = await prisma.server.create({
+      data: {
+        name: pteroServer.name,
+        identifierPtero: pteroServer.identifier,
+        idPtero: String(pteroServer.id),
+        status: "active",
+        cpuUsage: 0,
+        memoryUsage: 0,
+        diskUsage: 0,
+        databaseUsage: 0,
+        backupUsage: 0,
+        allocatedUsage: 0,
+        userId: session.user.id,
+      },
+    })
 
-  return NextResponse.json(server, { status: 201 })
+    return NextResponse.json(server, { status: 201 })
+  } catch (err) {
+    console.error("Server creation failed:", err)
+    const message = err instanceof Error ? err.message : "Server creation failed"
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }

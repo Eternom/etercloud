@@ -3,6 +3,7 @@ import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import stripe from "@/lib/stripe"
+import { BillingService } from "@/services/billing.service"
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -40,14 +41,24 @@ export async function POST(req: NextRequest) {
     })
   }
 
+  // Block checkout if user already has an active subscription
+  const existing = await BillingService.getUserSubscription(customerId)
+  if (existing) {
+    return NextResponse.json(
+      { error: "You already have an active subscription. Use the billing portal to make changes." },
+      { status: 409 }
+    )
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
 
   const checkoutSession = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: "subscription",
+    allow_promotion_codes: true,
     line_items: [{ price: plan.stripePriceId, quantity: 1 }],
-    success_url: `${appUrl}/dashboard/billing?success=true`,
-    cancel_url: `${appUrl}/dashboard/billing`,
+    success_url: `${appUrl}/dashboard/billing/status?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/dashboard/billing/status?canceled=true`,
     metadata: { userId: user.id, planId: plan.id },
     subscription_data: {
       metadata: { userId: user.id, planId: plan.id },
