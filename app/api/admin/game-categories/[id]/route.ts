@@ -9,8 +9,8 @@ async function requireAdmin() {
   return session
 }
 
-// PATCH /api/admin/locations/[id]
-// Toggles the active field of a synced location.
+// PATCH /api/admin/game-categories/[id]
+// Toggles the active field of a synced game category.
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -22,12 +22,12 @@ export async function PATCH(
   const { id } = await params
   const { active } = await req.json() as { active?: boolean }
 
-  const location = await prisma.location.update({
+  const category = await prisma.gameCategory.update({
     where: { id },
     data: {
       ...(active !== undefined && { active }),
     },
   })
 
-  return NextResponse.json(location)
+  return NextResponse.json(category)
 }

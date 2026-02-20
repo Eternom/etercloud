@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, Users, CreditCard, Server, MapPin, PackageCheck } from "lucide-react"
+import { LayoutDashboard, Users, CreditCard, Server, MapPin, PackageCheck, Gamepad2 } from "lucide-react"
 import { NavItem } from "@/components/navigation/nav-item"
 import { SidebarUserMenu } from "@/components/navigation/sidebar-user-menu"
 
@@ -10,6 +10,7 @@ const adminNavItems = [
   { href: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { href: "/admin/servers", label: "Servers", icon: Server },
   { href: "/admin/locations", label: "Locations", icon: MapPin },
+  { href: "/admin/game-categories", label: "Game categories", icon: Gamepad2 },
   { href: "/admin/plans", label: "Plans", icon: PackageCheck },
 ]
 

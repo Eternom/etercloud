@@ -1,12 +1,13 @@
 import { headers } from "next/headers"
 import { Server } from "lucide-react"
+import Link from "next/link"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { BillingService } from "@/services/billing.service"
 import { ServerCard } from "@/components/display/server-card"
-import { CreateServerForm } from "@/components/form/create-server-form"
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 import { PageHeader } from "@/components/display/page-header"
+import { Button } from "@/components/ui/button"
 
 export default async function ServersPage() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -28,10 +29,7 @@ export default async function ServersPage() {
   const serverMax = subscription?.plan.planLimit?.serverMax ?? 0
   const activeCount = servers.filter((s) => s.status !== "terminated").length
   const atLimit = activeCount >= serverMax
-
-  let disabledReason: string | undefined
-  if (!hasActiveSub) disabledReason = "An active subscription is required"
-  else if (atLimit) disabledReason = `Your plan allows a maximum of ${serverMax} server${serverMax > 1 ? "s" : ""}`
+  const canCreate = hasActiveSub && !atLimit
 
   return (
     <>
@@ -39,10 +37,11 @@ export default async function ServersPage() {
         title="Servers"
         description="Manage your game servers."
         action={
-          <CreateServerForm
-            disabled={!hasActiveSub || atLimit}
-            disabledReason={disabledReason}
-          />
+          canCreate ? (
+            <Button asChild>
+              <Link href="/dashboard/servers/new">Create server</Link>
+            </Button>
+          ) : null
         }
       />
       <div className="p-8">

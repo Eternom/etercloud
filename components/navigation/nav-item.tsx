@@ -26,7 +26,7 @@ export function NavItem({ href, label, icon: Icon }: NavItemProps) {
       )}
     >
       <Icon className="size-4 shrink-0" />
-      {label}
+      <span className="truncate">{label}</span>
     </Link>
   )
 }
