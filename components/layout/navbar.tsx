@@ -1,21 +1,25 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { HardDrive, Menu } from "lucide-react"
+import {
+  HardDrive,
+  Home,
+  Tag,
+  Info,
+  Mail,
+  LayoutDashboard,
+  LogIn,
+  type LucideIcon,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Separator } from "@/components/ui/separator"
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/#features", label: "Features" },
-  { href: "/#how-it-works", label: "How" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#locations", label: "Locations" },
-  { href: "/#faq", label: "FAQ" },
+const NAV_LINKS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/pricing", label: "Pricing", icon: Tag },
+  { href: "/about", label: "About", icon: Info },
+  { href: "/contact", label: "Contact", icon: Mail },
 ]
 
 interface PublicNavbarProps {
@@ -23,119 +27,98 @@ interface PublicNavbarProps {
 }
 
 export function Navbar({ isLoggedIn }: PublicNavbarProps) {
-  const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
   function isActive(href: string) {
-    if (href === "/status") return pathname === "/status"
-    if (href === "/") return pathname === "/"
-    return false
+    return pathname === href
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto grid h-16 max-w-6xl grid-cols-3 items-center px-4 sm:px-6">
+    <>
+      {/* ── Top bar (desktop only) ──────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 hidden w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:block">
+        <div className="mx-auto grid h-16 max-w-6xl grid-cols-3 items-center px-4 sm:px-6">
 
-        {/* Left — Logo */}
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-          <HardDrive className="size-5" />
-          EterCloud
-        </Link>
+          {/* Left — Logo */}
+          <Link href="/" className="flex items-center gap-2 text-lg font-bold">
+            <HardDrive className="size-5" />
+            EterCloud
+          </Link>
 
-        {/* Center — Nav */}
-        <nav className="hidden items-center justify-center gap-1 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm transition-colors",
-                isActive(link.href)
-                  ? "bg-accent font-medium text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right — CTAs */}
-        <div className="hidden items-center justify-end gap-2 md:flex">
-          {isLoggedIn ? (
-            <Button asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-          ) : (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/login">Sign in</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">Get started</Link>
-              </Button>
-            </>
-          )}
-        </div>
-
-        {/* Mobile — Hamburger (spans right column) */}
-        <div className="flex justify-end md:hidden">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="size-5" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <div className="mb-6 flex items-center gap-2 text-lg font-bold">
-                <HardDrive className="size-5" />
-                EterCloud
-              </div>
-              <nav className="flex flex-col gap-1">
-                {NAV_LINKS.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "rounded-md px-3 py-2 text-sm transition-colors",
-                      isActive(link.href)
-                        ? "bg-accent font-medium text-accent-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-              <Separator className="my-4" />
-              <div className="flex flex-col gap-2">
-                {isLoggedIn ? (
-                  <Button asChild>
-                    <Link href="/dashboard" onClick={() => setOpen(false)}>
-                      Dashboard
-                    </Link>
-                  </Button>
-                ) : (
-                  <>
-                    <Button variant="outline" asChild>
-                      <Link href="/login" onClick={() => setOpen(false)}>
-                        Sign in
-                      </Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href="/signup" onClick={() => setOpen(false)}>
-                        Get started
-                      </Link>
-                    </Button>
-                  </>
+          {/* Center — Nav */}
+          <nav className="flex items-center justify-center gap-1">
+            {NAV_LINKS.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
+                  isActive(href)
+                    ? "bg-accent font-medium text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
-              </div>
-            </SheetContent>
-          </Sheet>
+              >
+                <Icon className="size-3.5 shrink-0" />
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right — CTAs */}
+          <div className="flex items-center justify-end gap-2">
+            {isLoggedIn ? (
+              <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">Sign in</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/signup">Get started</Link>
+                </Button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* ── Mobile bottom bar (4 nav + 1 auth = 5 icons) ───────────────────── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center border-t bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 md:hidden">
+        {NAV_LINKS.map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            aria-label={label}
+            className={cn(
+              "flex flex-1 items-center justify-center py-2 transition-colors",
+              isActive(href)
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Icon className="size-5" />
+          </Link>
+        ))}
+
+        {/* Auth icon */}
+        <Link
+          href={isLoggedIn ? "/dashboard" : "/login"}
+          aria-label={isLoggedIn ? "Dashboard" : "Sign in"}
+          className={cn(
+            "flex flex-1 items-center justify-center py-2 transition-colors",
+            isActive(isLoggedIn ? "/dashboard" : "/login")
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {isLoggedIn
+            ? <LayoutDashboard className="size-5" />
+            : <LogIn className="size-5" />
+          }
+        </Link>
+      </nav>
+    </>
   )
 }

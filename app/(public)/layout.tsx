@@ -9,7 +9,9 @@ export default async function PublicLayout({ children }: { children: React.React
   return (
     <div className="bg-background text-foreground">
       <Navbar isLoggedIn={!!session} />
-      {children}
+      <main className="pb-16 md:pb-0">
+        {children}
+      </main>
       <Footer />
     </div>
   )
