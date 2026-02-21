@@ -55,7 +55,7 @@ export default async function BillingPage() {
     <>
       <PageHeader title="Billing" description="Manage your subscription and payment details." />
 
-      <div className="flex gap-8 p-8">
+      <div className="flex flex-col gap-6 p-4 sm:p-8 lg:flex-row lg:gap-8">
 
         {/* ── Main column ── */}
         <div className="flex flex-1 flex-col gap-6 min-w-0">
@@ -178,9 +178,9 @@ export default async function BillingPage() {
         </div>
 
         {/* ── Sidebar ── */}
-        <div className="w-56 shrink-0">
+        <div className="lg:w-56 lg:shrink-0">
           {subscription ? (
-            <div className="sticky top-24 flex flex-col gap-4">
+            <div className="flex flex-col gap-4 lg:sticky lg:top-24">
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-2">

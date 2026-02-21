@@ -9,6 +9,7 @@ import { ServerCard } from "@/components/display/server-card"
 import { PageHeader } from "@/components/display/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Progress } from "@/components/ui/progress"
 
 function mbToGb(mb: number) {
@@ -54,6 +55,7 @@ export default async function DashboardPage() {
     : null
 
   const isCanceling = subscription?.stripeSubscription.cancel_at_period_end ?? false
+  const recentServers = activeServers.slice(0, 3)
 
   return (
     <>
@@ -61,22 +63,22 @@ export default async function DashboardPage() {
         title="Overview"
         description={`Welcome back, ${session!.user.name.split(" ")[0]}.`}
       />
-      <div className="flex flex-col gap-8 p-8">
+      <div className="flex flex-col gap-6 p-4 sm:gap-8 sm:p-8">
 
         {/* ── Plan banner ── */}
         {subscription ? (
-          <div className="flex items-center justify-between rounded-xl border bg-card px-6 py-4">
+          <div className="flex flex-col gap-2 rounded-xl border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
             <div className="flex items-center gap-3">
               <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">Current plan</span>
+                <span className="text-xs text-muted-foreground sm:text-sm">Current plan</span>
                 <span className="font-semibold">{subscription.plan.name}</span>
               </div>
-              <Badge variant={isCanceling ? "secondary" : "default"} className="ml-2">
+              <Badge variant={isCanceling ? "secondary" : "default"}>
                 {isCanceling ? "Canceling" : subscription.stripeSubscription.status}
               </Badge>
             </div>
             {periodEnd && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground sm:text-sm">
                 {isCanceling ? "Access ends" : "Renews"}{" "}
                 <span className="font-medium text-foreground">
                   {periodEnd.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
@@ -85,7 +87,7 @@ export default async function DashboardPage() {
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-between rounded-xl border border-dashed px-6 py-4 text-muted-foreground">
+          <div className="flex items-center justify-between rounded-xl border border-dashed px-4 py-3 text-muted-foreground sm:px-6 sm:py-4">
             <span className="text-sm">No active subscription</span>
             <Link href="/dashboard/billing" className="text-sm underline underline-offset-4 hover:text-foreground">
               View plans →
@@ -94,7 +96,7 @@ export default async function DashboardPage() {
         )}
 
         {/* ── Stat cards ── */}
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           <StatCard
             title="Servers"
             value={serverMax > 0 ? `${activeServers.length} / ${serverMax}` : activeServers.length}
@@ -166,18 +168,40 @@ export default async function DashboardPage() {
         )}
 
         {/* ── Recent servers ── */}
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-semibold">Recent servers</h2>
-            {activeServers.length > 3 && (
-              <Link href="/dashboard/servers" className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
-                View all
-              </Link>
-            )}
-          </div>
-          {activeServers.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {activeServers.slice(0, 3).map((server) => (
+        {recentServers.length > 0 && (
+          <div>
+            <div className="mb-3 flex items-center justify-between sm:mb-4">
+              <h2 className="text-base font-semibold">Recent servers</h2>
+              {activeServers.length > 3 && (
+                <Link href="/dashboard/servers" className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                  View all
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile: carousel */}
+            <div className="sm:hidden -mx-4">
+              <Carousel opts={{ align: "start" }} className="w-full px-4">
+                <CarouselContent className="-ml-3">
+                  {recentServers.map((server) => (
+                    <CarouselItem key={server.id} className="pl-3 basis-[85%]">
+                      <ServerCard
+                        name={server.name}
+                        identifier={server.identifierPtero}
+                        status={server.status}
+                        cpuUsage={server.cpuUsage}
+                        memoryUsageMb={server.memoryUsage}
+                        diskUsageMb={server.diskUsage}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
+
+            {/* Desktop: grid */}
+            <div className="hidden sm:grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {recentServers.map((server) => (
                 <ServerCard
                   key={server.id}
                   name={server.name}
@@ -189,10 +213,8 @@ export default async function DashboardPage() {
                 />
               ))}
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No servers yet.</p>
-          )}
-        </div>
+          </div>
+        )}
 
       </div>
     </>
