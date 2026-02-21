@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-clip`}>
+    <html lang="en" className="dark scroll-smooth overflow-x-hidden">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <TooltipProvider>
           {children}
         </TooltipProvider>

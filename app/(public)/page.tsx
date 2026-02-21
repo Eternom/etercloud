@@ -108,7 +108,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="relative mx-auto flex max-w-6xl flex-col gap-12 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:py-32">
+      <section className="relative mx-auto flex max-w-6xl flex-col gap-12 overflow-hidden px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:py-32">
         {/* Background Decorative Elements */}
         <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
         <div className="absolute top-1/2 -right-24 h-96 w-96 rounded-full bg-secondary/5 blur-3xl" />
