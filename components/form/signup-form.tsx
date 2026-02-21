@@ -99,7 +99,7 @@ export function SignupForm({
                 <FieldError id="email-error" message={errors.email?.message} />
               </Field>
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
+                <Field className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
                     <div className="relative">

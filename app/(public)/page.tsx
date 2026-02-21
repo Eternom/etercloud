@@ -118,7 +118,7 @@ export default async function HomePage() {
             <span className="inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
               Next-Gen Game Hosting
             </span>
-            <h1 className="text-5xl font-black tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-7xl">
               Your game server, <br />
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 online in seconds
@@ -207,7 +207,7 @@ export default async function HomePage() {
             </div>
 
             {/* Floating Badges */}
-            <div className="absolute -left-8 top-12 animate-bounce duration-[3000ms]">
+            <div className="absolute -left-8 top-12 animate-bounce duration-[3000ms] hidden sm:flex">
               <div className="flex items-center gap-2 rounded-2xl bg-card p-3 shadow-xl ring-1 ring-border">
                 <div className="size-8 rounded-lg bg-green-500 flex items-center justify-center text-white">
                   <Zap className="size-4" />
@@ -219,7 +219,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="absolute -right-4 bottom-12 animate-bounce duration-[4000ms]">
+            <div className="absolute -right-4 bottom-12 animate-bounce duration-[4000ms] hidden sm:flex">
               <div className="flex items-center gap-2 rounded-2xl bg-card p-3 shadow-xl ring-1 ring-border">
                 <div className="size-8 rounded-lg bg-primary flex items-center justify-center text-white">
                   <BarChart3 className="size-4" />
@@ -316,7 +316,7 @@ export default async function HomePage() {
                     key={plan.id}
                     value={plan.id}
                     className={cn(
-                      "group border-none bg-card px-8 py-2 shadow-xl shadow-muted/20 transition-all duration-300 rounded-[2.5rem] hover:shadow-2xl hover:shadow-primary/10",
+                      "group border-none bg-card px-4 py-2 shadow-xl shadow-muted/20 transition-all duration-300 rounded-[2rem] sm:px-8 sm:rounded-[2.5rem] hover:shadow-2xl hover:shadow-primary/10",
                       highlighted && "ring-2 ring-primary shadow-2xl shadow-primary/20"
                     )}
                   >

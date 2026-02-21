@@ -10,7 +10,7 @@ export async function proxy(request: NextRequest) {
   // Vérifier si la route nécessite une authentification
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     if (!session) {
-      return NextResponse.redirect(new URL("/sign-in", request.url))
+      return NextResponse.redirect(new URL("/login", request.url))
     }
   }
   

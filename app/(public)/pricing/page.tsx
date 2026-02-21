@@ -46,7 +46,7 @@ export default async function PricingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
         <div className="relative flex flex-col gap-4 text-center items-center">
           <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-primary">Pricing</span>
-          <h1 className="text-5xl font-black tracking-tight sm:text-7xl">
+          <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-7xl">
             Simple, transparent <span className="text-primary">pricing</span>
           </h1>
           <p className="max-w-2xl text-xl text-muted-foreground">
@@ -76,7 +76,7 @@ export default async function PricingPage() {
                     key={plan.id}
                     value={plan.id}
                     className={cn(
-                      "group border-none bg-card px-8 py-2 shadow-xl shadow-muted/20 transition-all duration-300 rounded-[2.5rem] hover:shadow-2xl hover:shadow-primary/10",
+                      "group border-none bg-card px-4 py-2 shadow-xl shadow-muted/20 transition-all duration-300 rounded-[2rem] sm:px-8 sm:rounded-[2.5rem] hover:shadow-2xl hover:shadow-primary/10",
                       highlighted && "ring-2 ring-primary shadow-2xl shadow-primary/20"
                     )}
                   >

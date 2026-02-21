@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { LayoutDashboard, ShieldCheck, LogOut } from "lucide-react"
 import { signOut } from "@/services/auth-client.service"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { SidebarMenuButton } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +41,7 @@ export function SidebarUserMenu({ name, email, role }: SidebarUserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent/50 focus-visible:outline-none">
+        <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
           <Avatar className="size-8 shrink-0">
             <AvatarFallback className="text-xs">{getInitials(name)}</AvatarFallback>
           </Avatar>
@@ -48,7 +49,7 @@ export function SidebarUserMenu({ name, email, role }: SidebarUserMenuProps) {
             <span className="truncate font-medium leading-tight">{name}</span>
             <span className="truncate text-xs text-muted-foreground leading-tight">{email}</span>
           </div>
-        </button>
+        </SidebarMenuButton>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side="top" align="start" className="w-56">
