@@ -3,6 +3,16 @@
 import { LayoutDashboard, Users, CreditCard, Server, MapPin, PackageCheck, Gamepad2 } from "lucide-react"
 import { NavItem } from "@/components/navigation/nav-item"
 import { SidebarUserMenu } from "@/components/navigation/sidebar-user-menu"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
 
 const adminNavItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -24,20 +34,30 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ user }: AdminSidebarProps) {
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r bg-card">
-      <div className="flex h-16 items-center border-b px-6">
-        <span className="text-lg font-bold tracking-tight">EterCloud Admin</span>
-      </div>
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex h-10 items-center px-2">
+          <span className="text-lg font-bold tracking-tight">EterCloud Admin</span>
+        </div>
+      </SidebarHeader>
 
-      <nav className="flex flex-1 flex-col gap-1 p-4">
-        {adminNavItems.map((item) => (
-          <NavItem key={item.href} {...item} />
-        ))}
-      </nav>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {adminNavItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <NavItem href={item.href} label={item.label} icon={item.icon} />
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      <div className="border-t p-3">
+      <SidebarFooter>
         <SidebarUserMenu name={user.name} email={user.email} role={user.role} />
-      </div>
-    </aside>
+      </SidebarFooter>
+    </Sidebar>
   )
 }

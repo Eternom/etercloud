@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic'
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { Sidebar } from "@/components/navigation/sidebar"
+import { AppSidebar } from "@/components/navigation/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 
 export default async function DashboardLayout({
   children,
@@ -19,11 +20,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-background">
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
         {children}
-      </main>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

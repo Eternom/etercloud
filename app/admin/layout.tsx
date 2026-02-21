@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { AdminSidebar } from "@/components/navigation/admin-sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 
 export default async function AdminLayout({
   children,
@@ -16,7 +17,7 @@ export default async function AdminLayout({
   if (session.user.role !== "admin") redirect("/dashboard")
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <SidebarProvider>
       <AdminSidebar
         user={{
           name: session.user.name,
@@ -24,9 +25,9 @@ export default async function AdminLayout({
           role: session.user.role ?? "admin",
         }}
       />
-      <main className="flex-1 overflow-y-auto bg-background">
+      <SidebarInset>
         {children}
-      </main>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
