@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 
 /**
- * Sign-out button that calls BetterAuth's signOut and redirects to /sign-in.
+ * Sign-out button that calls BetterAuth's signOut and redirects to /login.
  *
  * @param {React.ComponentProps<typeof Button>} props - Standard Button props
  */

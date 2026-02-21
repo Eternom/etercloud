@@ -7,9 +7,9 @@ export default async function PublicLayout({ children }: { children: React.React
   const session = await auth.api.getSession({ headers: await headers() })
 
   return (
-    <div className="bg-background text-foreground">
+    <div className="bg-background text-foreground pb-16 md:pb-0">
       <Navbar isLoggedIn={!!session} />
-      <main className="pb-16 md:pb-0">
+      <main>
         {children}
       </main>
       <Footer />

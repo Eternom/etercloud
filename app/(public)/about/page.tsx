@@ -29,7 +29,7 @@ export default function AboutPage() {
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-16">
           <div className="flex flex-1 flex-col gap-4">
             <span className="inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">About</span>
-            <h1 className="text-5xl font-black tracking-tight sm:text-6xl">
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
               Game server hosting,{" "}
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">simplified</span>
             </h1>
