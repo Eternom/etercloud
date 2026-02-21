@@ -238,54 +238,40 @@ export default async function HomePage() {
       <Separator />
 
       {/* ── Features ── */}
-      <section id="features" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
+      <section id="features" className="relative mx-auto max-w-6xl overflow-hidden px-4 py-24 sm:px-6">
         {/* Mobile: carousel */}
-        <div className="sm:hidden -mx-4">
-          <Carousel opts={{ align: "start" }} className="w-full px-4">
-            <CarouselContent className="-ml-3">
-              {features.map((f, i) => (
-                <CarouselItem key={f.title} className="pl-3 basis-[85%]">
-                  <Card className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 h-full">
-                    <div className="relative h-48 w-full overflow-hidden">
-                      <img src={f.image} alt={f.title} className="h-full w-full object-cover" loading="lazy" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
-                      <div className={cn("absolute bottom-4 left-6 flex size-12 items-center justify-center rounded-2xl shadow-lg", i % 2 === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground")}>
-                        <f.icon className="size-6" />
-                      </div>
+        <Carousel opts={{ align: "start" }} className="sm:hidden">
+          <CarouselContent>
+            {features.map((f, i) => (
+              <CarouselItem key={f.title} className="basis-[85%]">
+                <Card className="overflow-hidden border-none bg-card shadow-xl shadow-muted/20 h-full">
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <img src={f.image} alt={f.title} className="h-full w-full object-cover" loading="lazy" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+                    <div className={cn("absolute bottom-4 left-6 flex size-12 items-center justify-center rounded-2xl shadow-lg", i % 2 === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground")}>
+                      <f.icon className="size-6" />
                     </div>
-                    <CardHeader className="pb-2 pt-6"><CardTitle className="text-xl font-bold">{f.title}</CardTitle></CardHeader>
-                    <CardContent className="pb-8"><p className="text-muted-foreground leading-relaxed">{f.description}</p></CardContent>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
+                  </div>
+                  <CardHeader className="pb-2 pt-6"><CardTitle className="text-xl font-bold">{f.title}</CardTitle></CardHeader>
+                  <CardContent className="pb-8"><p className="text-muted-foreground leading-relaxed">{f.description}</p></CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
         {/* Desktop: grid */}
         <div className="hidden sm:grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
             <Card key={f.title} className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10">
               <div className="relative h-48 w-full overflow-hidden">
-                <img
-                  src={f.image}
-                  alt={f.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                />
+                <img src={f.image} alt={f.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
-                <div className={cn(
-                  "absolute bottom-4 left-6 flex size-12 items-center justify-center rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-110",
-                  i % 2 === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                )}>
+                <div className={cn("absolute bottom-4 left-6 flex size-12 items-center justify-center rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-110", i % 2 === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground")}>
                   <f.icon className="size-6" />
                 </div>
               </div>
-              <CardHeader className="pb-2 pt-6">
-                <CardTitle className="text-xl font-bold">{f.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="pb-8">
-                <p className="text-muted-foreground leading-relaxed">{f.description}</p>
-              </CardContent>
+              <CardHeader className="pb-2 pt-6"><CardTitle className="text-xl font-bold">{f.title}</CardTitle></CardHeader>
+              <CardContent className="pb-8"><p className="text-muted-foreground leading-relaxed">{f.description}</p></CardContent>
             </Card>
           ))}
         </div>
@@ -419,61 +405,44 @@ export default async function HomePage() {
       {/* ── Locations ── */}
       {locations.length > 0 && (
         <>
-          <section id="locations" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+          <section id="locations" className="mx-auto max-w-6xl overflow-hidden px-4 py-24 sm:px-6">
             <div className="mb-16 text-center">
               <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-primary">Locations</span>
               <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Deployment regions</h2>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">Choose the location closest to your players for the lowest latency.</p>
             </div>
             {/* Mobile: carousel */}
-            <div className="sm:hidden -mx-4">
-              <Carousel opts={{ align: "start" }} className="w-full px-4">
-                <CarouselContent className="-ml-3">
-                  {locations.map((loc, i) => (
-                    <CarouselItem key={loc.id} className="pl-3 basis-[85%]">
-                      <Card className="group relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 h-full">
-                        <img src={`https://images.unsplash.com/photo-${["1512453979798-5ea266f8880c","1449824913935-59a10b8d2000","1444723121867-7a241cacace9","1502602898657-3e91760cbb34","1518391846015-55a9cc003b25"][i % 5]}?auto=format&fit=crop&q=80&w=800`} alt={loc.name} className="absolute inset-0 h-full w-full object-cover opacity-5" />
-                        <div className="relative flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                          <MapPin className="size-7" />
-                          <span className="absolute inset-0 rounded-2xl animate-ping bg-primary/15" />
-                        </div>
-                        <div className="relative flex flex-col gap-2">
-                          <p className="text-xl font-bold">{loc.name}</p>
-                          {loc.description && <p className="text-muted-foreground leading-relaxed">{loc.description}</p>}
-                        </div>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
-            </div>
+            <Carousel opts={{ align: "start" }} className="sm:hidden">
+              <CarouselContent>
+                {locations.map((loc, i) => (
+                  <CarouselItem key={loc.id} className="basis-[85%]">
+                    <Card className="relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 h-full">
+                      <img src={`https://images.unsplash.com/photo-${["1512453979798-5ea266f8880c","1449824913935-59a10b8d2000","1444723121867-7a241cacace9","1502602898657-3e91760cbb34","1518391846015-55a9cc003b25"][i % 5]}?auto=format&fit=crop&q=80&w=800`} alt={loc.name} className="absolute inset-0 h-full w-full object-cover opacity-5" />
+                      <div className="relative flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <MapPin className="size-7" />
+                        <span className="absolute inset-0 rounded-2xl animate-ping bg-primary/15" />
+                      </div>
+                      <div className="relative flex flex-col gap-2">
+                        <p className="text-xl font-bold">{loc.name}</p>
+                        {loc.description && <p className="text-muted-foreground leading-relaxed">{loc.description}</p>}
+                      </div>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
             {/* Desktop: grid */}
-            <div className="hidden sm:grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="hidden sm:grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {locations.map((loc, i) => (
-                <Card
-                  key={loc.id}
-                  className="group relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10"
-                >
-                  <img
-                    src={`https://images.unsplash.com/photo-${[
-                      "1512453979798-5ea266f8880c",
-                      "1449824913935-59a10b8d2000",
-                      "1444723121867-7a241cacace9",
-                      "1502602898657-3e91760cbb34",
-                      "1518391846015-55a9cc003b25",
-                    ][i % 5]}?auto=format&fit=crop&q=80&w=800`}
-                    alt={loc.name}
-                    className="absolute inset-0 h-full w-full object-cover opacity-5 transition-opacity duration-300 group-hover:opacity-15"
-                  />
+                <Card key={loc.id} className="group relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10">
+                  <img src={`https://images.unsplash.com/photo-${["1512453979798-5ea266f8880c","1449824913935-59a10b8d2000","1444723121867-7a241cacace9","1502602898657-3e91760cbb34","1518391846015-55a9cc003b25"][i % 5]}?auto=format&fit=crop&q=80&w=800`} alt={loc.name} className="absolute inset-0 h-full w-full object-cover opacity-5 transition-opacity duration-300 group-hover:opacity-15" />
                   <div className="relative flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
                     <MapPin className="size-7" />
                     <span className="absolute inset-0 rounded-2xl animate-ping bg-primary/15" />
                   </div>
                   <div className="relative flex flex-col gap-2">
                     <p className="text-xl font-bold">{loc.name}</p>
-                    {loc.description && (
-                      <p className="text-muted-foreground leading-relaxed">{loc.description}</p>
-                    )}
+                    {loc.description && <p className="text-muted-foreground leading-relaxed">{loc.description}</p>}
                   </div>
                 </Card>
               ))}
