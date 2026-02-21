@@ -304,7 +304,7 @@ export default async function HomePage() {
       <Separator />
 
       {/* ── Pricing ── */}
-      <section id="pricing" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
+      <section id="pricing" className="relative mx-auto max-w-6xl overflow-hidden px-4 py-24 sm:px-6">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
         <div className="mb-16 text-center">
           <span className="inline-block rounded-full bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-primary">Pricing</span>
