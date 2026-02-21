@@ -1,22 +1,36 @@
 import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
-import { SidebarNav } from "@/components/navigation/sidebar-nav"
+import { NavItems } from "@/components/navigation/nav-item"
 import { SidebarUserMenu } from "@/components/navigation/sidebar-user-menu"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+} from "@/components/ui/sidebar"
 
-export async function Sidebar() {
+export async function AppSidebar() {
   const session = await auth.api.getSession({ headers: await headers() })
 
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r bg-card">
-      <div className="flex h-16 items-center border-b px-6">
-        <span className="text-lg font-bold tracking-tight">EterCloud</span>
-      </div>
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex h-10 items-center px-2">
+          <span className="text-lg font-bold tracking-tight">EterCloud</span>
+        </div>
+      </SidebarHeader>
 
-      <nav className="flex flex-1 flex-col gap-1 p-4">
-        <SidebarNav />
-      </nav>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <NavItems />
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      <div className="border-t p-3">
+      <SidebarFooter>
         {session && (
           <SidebarUserMenu
             name={session.user.name}
@@ -24,7 +38,7 @@ export async function Sidebar() {
             role={session.user.role ?? "user"}
           />
         )}
-      </div>
-    </aside>
+      </SidebarFooter>
+    </Sidebar>
   )
 }
