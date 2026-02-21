@@ -21,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { cn } from "@/lib/utils"
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 
 function formatPrice(cents: number) {
   return `${(cents / 100).toFixed(2)} €`
@@ -113,8 +114,8 @@ export default async function HomePage() {
         <div className="absolute top-1/2 -right-24 h-96 w-96 rounded-full bg-secondary/5 blur-3xl" />
 
         {/* Left: text content */}
-        <div className="relative flex flex-1 flex-col items-start gap-8">
-          <div className="flex flex-col gap-4">
+        <div className="relative flex flex-1 flex-col items-center text-center gap-8 lg:items-start lg:text-left">
+          <div className="flex flex-col items-center gap-4 lg:items-start">
             <span className="inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
               Next-Gen Game Hosting
             </span>
@@ -147,7 +148,7 @@ export default async function HomePage() {
             </Button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-medium text-muted-foreground">
+          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-sm font-medium text-muted-foreground lg:justify-start">
             <span className="flex items-center gap-2">
               <div className="flex size-5 items-center justify-center rounded-full bg-green-100 text-green-600">
                 <CheckCircle2 className="size-3" />
@@ -238,7 +239,30 @@ export default async function HomePage() {
 
       {/* ── Features ── */}
       <section id="features" className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Mobile: carousel */}
+        <div className="sm:hidden -mx-4">
+          <Carousel opts={{ align: "start" }} className="w-full px-4">
+            <CarouselContent className="-ml-3">
+              {features.map((f, i) => (
+                <CarouselItem key={f.title} className="pl-3 basis-[85%]">
+                  <Card className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 h-full">
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <img src={f.image} alt={f.title} className="h-full w-full object-cover" loading="lazy" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
+                      <div className={cn("absolute bottom-4 left-6 flex size-12 items-center justify-center rounded-2xl shadow-lg", i % 2 === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground")}>
+                        <f.icon className="size-6" />
+                      </div>
+                    </div>
+                    <CardHeader className="pb-2 pt-6"><CardTitle className="text-xl font-bold">{f.title}</CardTitle></CardHeader>
+                    <CardContent className="pb-8"><p className="text-muted-foreground leading-relaxed">{f.description}</p></CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        </div>
+        {/* Desktop: grid */}
+        <div className="hidden sm:grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
             <Card key={f.title} className="group overflow-hidden border-none bg-card shadow-xl shadow-muted/20 transition-shadow duration-300 hover:shadow-2xl hover:shadow-primary/10">
               <div className="relative h-48 w-full overflow-hidden">
@@ -401,7 +425,30 @@ export default async function HomePage() {
               <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Deployment regions</h2>
               <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">Choose the location closest to your players for the lowest latency.</p>
             </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Mobile: carousel */}
+            <div className="sm:hidden -mx-4">
+              <Carousel opts={{ align: "start" }} className="w-full px-4">
+                <CarouselContent className="-ml-3">
+                  {locations.map((loc, i) => (
+                    <CarouselItem key={loc.id} className="pl-3 basis-[85%]">
+                      <Card className="group relative flex flex-col gap-4 overflow-hidden border-none bg-card p-8 shadow-xl shadow-muted/20 h-full">
+                        <img src={`https://images.unsplash.com/photo-${["1512453979798-5ea266f8880c","1449824913935-59a10b8d2000","1444723121867-7a241cacace9","1502602898657-3e91760cbb34","1518391846015-55a9cc003b25"][i % 5]}?auto=format&fit=crop&q=80&w=800`} alt={loc.name} className="absolute inset-0 h-full w-full object-cover opacity-5" />
+                        <div className="relative flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                          <MapPin className="size-7" />
+                          <span className="absolute inset-0 rounded-2xl animate-ping bg-primary/15" />
+                        </div>
+                        <div className="relative flex flex-col gap-2">
+                          <p className="text-xl font-bold">{loc.name}</p>
+                          {loc.description && <p className="text-muted-foreground leading-relaxed">{loc.description}</p>}
+                        </div>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
+            {/* Desktop: grid */}
+            <div className="hidden sm:grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {locations.map((loc, i) => (
                 <Card
                   key={loc.id}
@@ -409,11 +456,11 @@ export default async function HomePage() {
                 >
                   <img
                     src={`https://images.unsplash.com/photo-${[
-                      "1512453979798-5ea266f8880c", // Dubai/City
-                      "1449824913935-59a10b8d2000", // New York
-                      "1444723121867-7a241cacace9", // SF
-                      "1502602898657-3e91760cbb34", // Paris
-                      "1518391846015-55a9cc003b25", // Tokyo
+                      "1512453979798-5ea266f8880c",
+                      "1449824913935-59a10b8d2000",
+                      "1444723121867-7a241cacace9",
+                      "1502602898657-3e91760cbb34",
+                      "1518391846015-55a9cc003b25",
                     ][i % 5]}?auto=format&fit=crop&q=80&w=800`}
                     alt={loc.name}
                     className="absolute inset-0 h-full w-full object-cover opacity-5 transition-opacity duration-300 group-hover:opacity-15"
@@ -440,12 +487,12 @@ export default async function HomePage() {
       {games.length > 0 && (
         <>
           <section id="games" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <div className="mb-12">
+            <div className="mb-12 text-center sm:text-left">
               <span className="text-xs font-semibold uppercase tracking-widest text-primary">Games</span>
               <h2 className="mt-2 text-3xl font-bold tracking-tight">Supported games</h2>
               <p className="mt-2 text-muted-foreground">Ready-to-deploy game templates, no configuration needed.</p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
               {games.map((game, i) => (
                 <Badge key={game.id} variant="secondary" className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all hover:bg-secondary/80">
                   <img src={`https://images.unsplash.com/photo-${[
